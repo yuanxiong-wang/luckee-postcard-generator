@@ -1,9 +1,9 @@
 /**
- * Postcard Export Utilities - Simplified Working Version
+ * Postcard Export Utilities - Fixed Clipping Issue
  */
 
 /**
- * Simple PNG download using html2canvas with minimal options
+ * PNG download with proper edge handling
  */
 export async function downloadPostcardAsPNG(
   elementId: string,
@@ -17,15 +17,36 @@ export async function downloadPostcardAsPNG(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Simple canvas capture with minimal options
-    const canvas = await html2canvas(element, {
-      scale: 1,
+    // Clone element to avoid modifying original
+    const clone = element.cloneNode(true) as HTMLElement;
+    
+    // Remove overflow and border-radius to capture full content
+    clone.style.overflow = 'visible';
+    clone.style.borderRadius = '0';
+    
+    // Temporarily add to DOM off-screen
+    clone.style.position = 'fixed';
+    clone.style.left = '-9999px';
+    clone.style.top = '-9999px';
+    clone.style.visibility = 'hidden';
+    document.body.appendChild(clone);
+
+    // Wait for rendering
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Capture with scale 2 for better quality
+    const canvas = await html2canvas(clone, {
+      scale: 2,
       useCORS: true,
       allowTaint: true,
       logging: false,
+      backgroundColor: '#ffffff',
     });
 
-    // Download using toDataURL
+    // Remove clone
+    document.body.removeChild(clone);
+
+    // Download
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
     link.download = filename;
@@ -37,7 +58,7 @@ export async function downloadPostcardAsPNG(
 }
 
 /**
- * Simple PDF download
+ * PDF download with proper edge handling
  */
 export async function downloadPostcardAsPDF(
   elementId: string,
@@ -52,13 +73,34 @@ export async function downloadPostcardAsPDF(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Simple canvas capture
-    const canvas = await html2canvas(element, {
-      scale: 1,
+    // Clone element to avoid modifying original
+    const clone = element.cloneNode(true) as HTMLElement;
+    
+    // Remove overflow and border-radius to capture full content
+    clone.style.overflow = 'visible';
+    clone.style.borderRadius = '0';
+    
+    // Temporarily add to DOM off-screen
+    clone.style.position = 'fixed';
+    clone.style.left = '-9999px';
+    clone.style.top = '-9999px';
+    clone.style.visibility = 'hidden';
+    document.body.appendChild(clone);
+
+    // Wait for rendering
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Capture with scale 2 for better quality
+    const canvas = await html2canvas(clone, {
+      scale: 2,
       useCORS: true,
       allowTaint: true,
       logging: false,
+      backgroundColor: '#ffffff',
     });
+
+    // Remove clone
+    document.body.removeChild(clone);
 
     // Create PDF with postcard dimensions (8.5" x 5.5")
     const pdf = new jsPDF({

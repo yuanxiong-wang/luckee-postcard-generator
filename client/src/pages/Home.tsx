@@ -10,6 +10,8 @@
 
 import { useState, useEffect } from 'react';
 import { Postcard } from '@/components/Postcard';
+import { MessageEditor } from '@/components/MessageEditor';
+import { PostcardToolbar } from '@/components/PostcardToolbar';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -34,12 +36,14 @@ export default function Home() {
   const [greeting, setGreeting] = useState<string>('');
   const [decorElements, setDecorElements] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showMessageEditor, setShowMessageEditor] = useState(false);
 
   // Initialize with current/next holiday
   useEffect(() => {
     const initialHoliday = getCurrentOrNextHoliday(region);
     setHoliday(initialHoliday);
-    setGreeting(getRandomGreeting(initialHoliday));
+    const randomGreeting = getRandomGreeting(initialHoliday);
+    setGreeting(randomGreeting);
     setDecorElements(getRandomDecorElements(initialHoliday, 3));
   }, []);
 
@@ -64,6 +68,12 @@ export default function Home() {
     setHoliday(newHoliday);
     setGreeting(getRandomGreeting(newHoliday));
     setDecorElements(getRandomDecorElements(newHoliday, 3));
+  };
+
+  // Handle custom message save
+  const handleSaveMessage = (newMessage: string) => {
+    setGreeting(newMessage);
+    setShowMessageEditor(false);
   };
 
   if (!holiday) {
@@ -113,11 +123,13 @@ export default function Home() {
               transform: isGenerating ? 'scale(0.98)' : 'scale(1)',
             }}
           >
-            <Postcard
-              holiday={holiday}
-              greeting={greeting}
-              decorElements={decorElements}
-            />
+            <div id="postcard-container">
+              <Postcard
+                holiday={holiday}
+                greeting={greeting}
+                decorElements={decorElements}
+              />
+            </div>
           </div>
 
           {/* Controls sidebar */}
@@ -192,9 +204,16 @@ export default function Home() {
               )}
             </Button>
 
-            {/* Download hint */}
+            {/* Export and sharing toolbar */}
+            <PostcardToolbar
+              holiday={holiday}
+              greeting={greeting}
+              onEditMessage={() => setShowMessageEditor(true)}
+            />
+
+            {/* Tip */}
             <p className="text-xs text-slate-500 text-center" style={{ fontFamily: 'Georgia, serif' }}>
-              💡 Tip: Take a screenshot to save your postcard!
+              💡 Customize your message, download, or share on social media!
             </p>
           </div>
         </div>
@@ -207,6 +226,16 @@ export default function Home() {
           </p>
         </div>
       </div>
+
+      {/* Message Editor Modal */}
+      {showMessageEditor && (
+        <MessageEditor
+          currentMessage={greeting}
+          onSave={handleSaveMessage}
+          onCancel={() => setShowMessageEditor(false)}
+          maxLength={100}
+        />
+      )}
     </div>
   );
 }

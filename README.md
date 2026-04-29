@@ -47,6 +47,11 @@ A beautiful, dynamic postcard generator that creates seasonal greetings for Luck
 - Multiple decorative elements that vary by season
 - Beautiful background images that enhance the visual appeal
 
+**Enhanced User Capabilities:**
+- **Custom Message Editing:** Personalize greetings while keeping the Luckee signature fixed
+- **Download/Export:** Save postcards as PNG (digital) or PDF (printable)
+- **Social Sharing:** Share directly to LinkedIn and Facebook with pre-filled messages
+
 ### User Interface
 
 **Region Selection:**

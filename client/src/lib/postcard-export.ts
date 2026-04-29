@@ -34,20 +34,21 @@ export async function downloadPostcardAsPNG(
       foreignObjectRendering: true,
     });
 
-    // Convert canvas to blob and download
-    canvas.toBlob((blob: Blob | null) => {
-      if (blob) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
-    }, 'image/png');
+    // Convert canvas to data URL and download
+    const dataUrl = canvas.toDataURL('image/png');
+    
+    // Create a link element and trigger download
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
   } catch (error) {
     console.error('Error downloading postcard as PNG:', error);
     throw error;

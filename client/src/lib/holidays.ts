@@ -329,3 +329,50 @@ export function getRandomDecorElements(holiday: Holiday, count: number = 3): str
   const shuffled = [...holiday.decorElements].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, Math.min(count, shuffled.length));
 }
+
+/**
+ * Get the next holiday in sequence based on current holiday and region
+ */
+export function getNextHoliday(currentHoliday: Holiday, userRegion: 'US' | 'UK' | 'both' = 'both'): Holiday {
+  const relevantHolidays = holidays.filter(
+    (h) => h.region === userRegion || h.region === 'both'
+  );
+
+  const currentIndex = relevantHolidays.findIndex((h) => h.id === currentHoliday.id);
+  
+  if (currentIndex === -1) {
+    return relevantHolidays[0];
+  }
+
+  // Get next holiday, wrap around to first if at the end
+  const nextIndex = (currentIndex + 1) % relevantHolidays.length;
+  return relevantHolidays[nextIndex];
+}
+
+/**
+ * Get the previous holiday in sequence based on current holiday and region
+ */
+export function getPreviousHoliday(currentHoliday: Holiday, userRegion: 'US' | 'UK' | 'both' = 'both'): Holiday {
+  const relevantHolidays = holidays.filter(
+    (h) => h.region === userRegion || h.region === 'both'
+  );
+
+  const currentIndex = relevantHolidays.findIndex((h) => h.id === currentHoliday.id);
+  
+  if (currentIndex === -1) {
+    return relevantHolidays[relevantHolidays.length - 1];
+  }
+
+  // Get previous holiday, wrap around to last if at the beginning
+  const previousIndex = (currentIndex - 1 + relevantHolidays.length) % relevantHolidays.length;
+  return relevantHolidays[previousIndex];
+}
+
+/**
+ * Get all holidays filtered by region
+ */
+export function getHolidaysByRegion(userRegion: 'US' | 'UK' | 'both' = 'both'): Holiday[] {
+  return holidays.filter(
+    (h) => h.region === userRegion || h.region === 'both'
+  );
+}

@@ -52,6 +52,7 @@ A beautiful, dynamic postcard generator that creates seasonal greetings for Luck
 - **Download/Export:** Save postcards as PNG (digital) or PDF (printable)
 - **Social Sharing:** Share directly to LinkedIn and Facebook with pre-filled messages
 - **Favorites System:** Save and manage preferred postcard designs using local storage for quick access
+- **Holiday Navigation:** Browse through all available holidays with Next/Previous buttons for easy exploration
 
 ### User Interface
 

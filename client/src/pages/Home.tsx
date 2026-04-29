@@ -14,6 +14,7 @@ import { MessageEditor } from '@/components/MessageEditor';
 import { PostcardToolbar } from '@/components/PostcardToolbar';
 import { SaveFavoriteButton } from '@/components/SaveFavoriteButton';
 import { FavoritesPanel } from '@/components/FavoritesPanel';
+import { HolidayNavigation } from '@/components/HolidayNavigation';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -26,6 +27,8 @@ import {
   getCurrentOrNextHoliday,
   getRandomGreeting,
   getRandomDecorElements,
+  getNextHoliday,
+  getPreviousHoliday,
   Holiday,
 } from '@/lib/holidays';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -95,6 +98,26 @@ export default function Home() {
     setGreeting(favorite.greeting);
     setDecorElements(favorite.decorElements);
     setShowFavorites(false);
+  };
+
+  // Handle next holiday
+  const handleNextHoliday = () => {
+    if (!holiday) return;
+    
+    const nextHol = getNextHoliday(holiday, region);
+    setHoliday(nextHol);
+    setGreeting(getRandomGreeting(nextHol));
+    setDecorElements(getRandomDecorElements(nextHol, 3));
+  };
+
+  // Handle previous holiday
+  const handlePreviousHoliday = () => {
+    if (!holiday) return;
+    
+    const prevHol = getPreviousHoliday(holiday, region);
+    setHoliday(prevHol);
+    setGreeting(getRandomGreeting(prevHol));
+    setDecorElements(getRandomDecorElements(prevHol, 3));
   };
 
   if (!holiday) {
@@ -175,6 +198,14 @@ export default function Home() {
               </Select>
             </div>
 
+            {/* Holiday Navigation */}
+            <HolidayNavigation
+              currentHoliday={holiday}
+              onNext={handleNextHoliday}
+              onPrevious={handlePreviousHoliday}
+              disabled={isGenerating}
+            />
+
             {/* Holiday info */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3
@@ -194,8 +225,7 @@ export default function Home() {
                   <span
                     key={idx}
                     className="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs"
-                    style={{ fontFamily: 'Georgia, serif' }}
-                  >
+                    style={{ fontFamily: 'Georgia, serif' }}>
                     {element.replace(/-/g, ' ')}
                   </span>
                 ))}

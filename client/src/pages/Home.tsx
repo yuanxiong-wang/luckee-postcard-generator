@@ -12,6 +12,8 @@ import { useState, useEffect } from 'react';
 import { Postcard } from '@/components/Postcard';
 import { MessageEditor } from '@/components/MessageEditor';
 import { PostcardToolbar } from '@/components/PostcardToolbar';
+import { SaveFavoriteButton } from '@/components/SaveFavoriteButton';
+import { FavoritesPanel } from '@/components/FavoritesPanel';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -26,7 +28,9 @@ import {
   getRandomDecorElements,
   Holiday,
 } from '@/lib/holidays';
-import { RefreshCw } from 'lucide-react';
+import { useFavorites } from '@/hooks/useFavorites';
+import { FavoritePostcard } from '@/lib/favorites';
+import { RefreshCw, Heart } from 'lucide-react';
 
 type Region = 'US' | 'UK' | 'both';
 
@@ -37,6 +41,8 @@ export default function Home() {
   const [decorElements, setDecorElements] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMessageEditor, setShowMessageEditor] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const { favorites, addFavorite } = useFavorites();
 
   // Initialize with current/next holiday
   useEffect(() => {
@@ -74,6 +80,21 @@ export default function Home() {
   const handleSaveMessage = (newMessage: string) => {
     setGreeting(newMessage);
     setShowMessageEditor(false);
+  };
+
+  // Handle loading a favorite
+  const handleLoadFavorite = (favorite: FavoritePostcard) => {
+    setRegion(favorite.region);
+    const favoriteHoliday = getCurrentOrNextHoliday(favorite.region);
+    
+    // Find the holiday that matches the favorite
+    if (favoriteHoliday.id === favorite.holidayId) {
+      setHoliday(favoriteHoliday);
+    }
+    
+    setGreeting(favorite.greeting);
+    setDecorElements(favorite.decorElements);
+    setShowFavorites(false);
   };
 
   if (!holiday) {
@@ -204,6 +225,28 @@ export default function Home() {
               )}
             </Button>
 
+            {/* Save to favorites button */}
+            <SaveFavoriteButton
+              holidayId={holiday.id}
+              holidayName={holiday.name}
+              greeting={greeting}
+              decorElements={decorElements}
+              region={region}
+              onSave={() => addFavorite(holiday.id, holiday.name, greeting, decorElements, region)}
+            />
+
+            {/* Show favorites button */}
+            {favorites.length > 0 && (
+              <Button
+                onClick={() => setShowFavorites(!showFavorites)}
+                variant="outline"
+                className="w-full"
+              >
+                <Heart className="w-4 h-4 mr-2 fill-orange-500 text-orange-500" />
+                View Favorites ({favorites.length})
+              </Button>
+            )}
+
             {/* Export and sharing toolbar */}
             <PostcardToolbar
               holiday={holiday}
@@ -213,10 +256,21 @@ export default function Home() {
 
             {/* Tip */}
             <p className="text-xs text-slate-500 text-center" style={{ fontFamily: 'Georgia, serif' }}>
-              💡 Customize your message, download, or share on social media!
+              💡 Save favorites, customize messages, download, or share!
             </p>
           </div>
         </div>
+
+        {/* Favorites Panel */}
+        {showFavorites && (
+          <div className="mt-12">
+            <FavoritesPanel
+              favorites={favorites}
+              onSelectFavorite={handleLoadFavorite}
+              onClose={() => setShowFavorites(false)}
+            />
+          </div>
+        )}
 
         {/* Footer info */}
         <div className="mt-16 text-center">

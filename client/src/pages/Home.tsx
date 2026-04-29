@@ -301,29 +301,27 @@ export default function Home() {
           </div>
         </div>
 
-        {/* View Favorites button - below postcard */}
+        {/* View Favorites button and Panel - below postcard */}
         {favorites.length > 0 && (
           <div className="mt-6 lg:col-span-2">
             <Button
               onClick={() => setShowFavorites(!showFavorites)}
               variant="outline"
-              className="w-full"
+              className="w-full mb-6"
             >
               <Heart className="w-4 h-4 mr-2 fill-orange-500 text-orange-500" />
-              View Favorites ({favorites.length})
+              {showFavorites ? 'Hide Favorites' : `View Favorites (${favorites.length})`}
             </Button>
-          </div>
-        )}
-
-        {/* Favorites Panel */}
-        {showFavorites && (
-          <div className="mt-12">
-            <FavoritesPanel
-              favorites={favorites}
-              onSelectFavorite={handleLoadFavorite}
-              onRemoveFavorite={removeFavorite}
-              onClose={() => setShowFavorites(false)}
-            />
+            
+            {/* Favorites Panel - displayed below button */}
+            {showFavorites && (
+              <FavoritesPanel
+                favorites={favorites}
+                onSelectFavorite={handleLoadFavorite}
+                onRemoveFavorite={removeFavorite}
+                onClose={() => setShowFavorites(false)}
+              />
+            )}
           </div>
         )}
 

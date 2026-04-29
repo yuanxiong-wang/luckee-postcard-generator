@@ -4,7 +4,7 @@
  * Button to save/unsave a postcard as favorite
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import { saveFavorite, removeFavorite, isFavorited } from '@/lib/favorites';
@@ -34,6 +34,11 @@ export function SaveFavoriteButton({
   );
   const [isLoading, setIsLoading] = useState(false);
 
+  // Reset favorite state when postcard changes
+  useEffect(() => {
+    setIsFav(isFavorited(holidayId, greeting, decorElements));
+  }, [holidayId, greeting, decorElements]);
+
   const handleToggleFavorite = async () => {
     setIsLoading(true);
 
@@ -61,7 +66,7 @@ export function SaveFavoriteButton({
         // Add to favorites
         saveFavorite(holidayId, holidayName, greeting, decorElements, region);
         setIsFav(true);
-        toast.success('Added to favorites');
+        toast.success('Added to favorites!');
         onSave?.();
       }
     } catch (error) {

@@ -2,43 +2,16 @@
  * Postcard Export Utilities
  * 
  * Provides functions to export postcards as PNG or PDF files
- * Handles cross-origin background images properly
  */
-
-/**
- * Helper function to load an image and return as data URL
- */
-async function loadImageAsDataUrl(url: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
-      } else {
-        reject(new Error('Failed to get canvas context'));
-      }
-    };
-    img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
-    img.src = url;
-  });
-}
 
 /**
  * Download postcard as PNG using html2canvas
- * Requires: npm install html2canvas
  */
 export async function downloadPostcardAsPNG(
   elementId: string,
   filename: string = 'luckee-postcard.png'
 ): Promise<void> {
   try {
-    // Dynamically import html2canvas
     const html2canvas = (await import('html2canvas')).default;
     
     const element = document.getElementById(elementId);
@@ -46,49 +19,31 @@ export async function downloadPostcardAsPNG(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Clone the element to avoid modifying the original
-    const clonedElement = element.cloneNode(true) as HTMLElement;
-    
-    // Temporarily add the cloned element to the DOM (off-screen)
-    clonedElement.style.position = 'fixed';
-    clonedElement.style.left = '-9999px';
-    clonedElement.style.top = '-9999px';
-    document.body.appendChild(clonedElement);
-
-    // Wait a bit for the clone to be rendered
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Create canvas from the cloned element
-    const canvas = await html2canvas(clonedElement, {
+    // Create canvas directly from the element
+    const canvas = await html2canvas(element, {
       scale: 2,
       backgroundColor: '#ffffff',
       logging: false,
       useCORS: true,
       allowTaint: true,
-      imageTimeout: 10000,
-      proxy: undefined,
-      foreignObjectRendering: false,
-      removeContainer: true,
+      imageTimeout: 15000,
     });
 
-    // Remove the cloned element
-    document.body.removeChild(clonedElement);
-
-    // Convert canvas to data URL and download
-    const dataUrl = canvas.toDataURL('image/png');
-    
-    // Create a link element and trigger download
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = filename;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    
-    // Clean up
-    setTimeout(() => {
+    // Convert to blob and download
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        throw new Error('Failed to create blob from canvas');
+      }
+      
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
       document.body.removeChild(link);
-    }, 100);
+      URL.revokeObjectURL(url);
+    }, 'image/png', 1.0);
   } catch (error) {
     console.error('Error downloading postcard as PNG:', error);
     throw error;
@@ -97,14 +52,12 @@ export async function downloadPostcardAsPNG(
 
 /**
  * Download postcard as PDF
- * Requires: npm install jspdf html2canvas
  */
 export async function downloadPostcardAsPDF(
   elementId: string,
   filename: string = 'luckee-postcard.pdf'
 ): Promise<void> {
   try {
-    // Dynamically import dependencies
     const html2canvas = (await import('html2canvas')).default;
     const { jsPDF } = await import('jspdf');
 
@@ -113,55 +66,45 @@ export async function downloadPostcardAsPDF(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Clone the element to avoid modifying the original
-    const clonedElement = element.cloneNode(true) as HTMLElement;
-    
-    // Temporarily add the cloned element to the DOM (off-screen)
-    clonedElement.style.position = 'fixed';
-    clonedElement.style.left = '-9999px';
-    clonedElement.style.top = '-9999px';
-    document.body.appendChild(clonedElement);
-
-    // Wait a bit for the clone to be rendered
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Create canvas from the cloned element
-    const canvas = await html2canvas(clonedElement, {
+    // Create canvas from the element
+    const canvas = await html2canvas(element, {
       scale: 2,
       backgroundColor: '#ffffff',
       logging: false,
       useCORS: true,
       allowTaint: true,
-      imageTimeout: 10000,
-      proxy: undefined,
-      foreignObjectRendering: false,
-      removeContainer: true,
+      imageTimeout: 15000,
     });
 
-    // Remove the cloned element
-    document.body.removeChild(clonedElement);
-
-    // Standard postcard dimensions: 8.5" x 5.5" at 72 DPI
+    // Standard postcard dimensions: 8.5" x 5.5"
     const pdfWidth = 8.5;
     const pdfHeight = 5.5;
 
-    // Create PDF with postcard dimensions
+    // Create PDF
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'in',
       format: [pdfWidth, pdfHeight],
     });
 
-    // Calculate dimensions to fit the canvas into the PDF
+    // Calculate image dimensions
     const imgWidth = pdfWidth;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    // Add image to PDF
-    const imgData = canvas.toDataURL('image/png');
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    // Convert canvas to image and add to PDF
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        throw new Error('Failed to create blob from canvas');
+      }
 
-    // Download the PDF
-    pdf.save(filename);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imgData = reader.result as string;
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        pdf.save(filename);
+      };
+      reader.readAsDataURL(blob);
+    }, 'image/png', 1.0);
   } catch (error) {
     console.error('Error downloading postcard as PDF:', error);
     throw error;

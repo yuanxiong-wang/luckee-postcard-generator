@@ -1,51 +1,32 @@
 /**
  * Holiday Background Images
  * 
- * Maps holiday seasons to their corresponding background images
+ * Maps each holiday to its unique background image
  */
 
 export const holidayBackgrounds: Record<string, string> = {
-  // Winter holidays (New Year, Christmas, Boxing Day)
-  winter: 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/postcard-winter-holiday-DbtdfQiaSfkEikAn3ZDUKG.webp',
+  // Winter holidays
+  'new-year': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-new-year-TiorbwW2cyKbeUJ4ud9NtD.webp',
+  'christmas': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-christmas-n8mwEtcsBpB4SMmxz2yBtE.webp',
+  'boxing-day': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-boxing-day-akAKtd6xfRRvkE75rM7Xw3.webp',
   
-  // Spring holidays (Valentine's, St. Patrick's, Easter)
-  spring: 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/postcard-spring-holiday-Fq3BWLWTWesGFc5EsCKD5F.webp',
+  // Spring holidays
+  'valentines': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-valentines-GpKKaaK3DwhHdJrgXXbnA6.webp',
+  'st-patricks': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-st-patricks-nTcMLkC4xt6bwKqyakwvH8.webp',
+  'easter': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-easter-UWEk6C7bEh8Tw4sfukaAev.webp',
   
-  // Summer holidays (Summer Solstice, Independence Day)
-  summer: 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/postcard-summer-holiday-dQ9fkKJ4Z3ZtduiDiCApsa.webp',
+  // Summer holidays
+  'summer-solstice': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-summer-solstice-guUuNm6VpcsNHaAAAZDESD.webp',
+  'independence-day': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-independence-day-BgMMBHFVGyXpiQcW63y5rg.webp',
   
-  // Fall holidays (Halloween, Thanksgiving)
-  fall: 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/postcard-fall-holiday-ZnC73KykjdEr9J2b4Pw37L.webp',
+  // Fall holidays
+  'halloween': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-halloween-Fnm4JebyhPjGfm6CkK5XKX.webp',
+  'thanksgiving': 'https://d2xsxph8kpxj0f.cloudfront.net/310419663030129359/JuoqfumrvRLnfobo4t377m/holiday-thanksgiving-S22JbTMRXVifR7somdwmof.webp',
 };
 
 /**
- * Get the season for a given holiday ID
- */
-export function getSeasonForHoliday(holidayId: string): string {
-  switch (holidayId) {
-    case 'new-year':
-    case 'christmas':
-    case 'boxing-day':
-      return 'winter';
-    case 'valentines':
-    case 'st-patricks':
-    case 'easter':
-      return 'spring';
-    case 'summer-solstice':
-    case 'independence-day':
-      return 'summer';
-    case 'halloween':
-    case 'thanksgiving':
-      return 'fall';
-    default:
-      return 'spring'; // Default fallback
-  }
-}
-
-/**
- * Get background image URL for a holiday
+ * Get background image URL for a specific holiday
  */
 export function getBackgroundForHoliday(holidayId: string): string {
-  const season = getSeasonForHoliday(holidayId);
-  return holidayBackgrounds[season] || holidayBackgrounds.spring;
+  return holidayBackgrounds[holidayId] || holidayBackgrounds['easter']; // Default fallback
 }

@@ -1,11 +1,9 @@
 /**
- * Postcard Export Utilities
- * 
- * Provides functions to export postcards as PNG or PDF files
+ * Postcard Export Utilities - Simplified Working Version
  */
 
 /**
- * Download postcard as PNG using html2canvas
+ * Simple PNG download using html2canvas with minimal options
  */
 export async function downloadPostcardAsPNG(
   elementId: string,
@@ -19,39 +17,27 @@ export async function downloadPostcardAsPNG(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Create canvas directly from the element
+    // Simple canvas capture with minimal options
     const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: '#ffffff',
-      logging: false,
+      scale: 1,
       useCORS: true,
       allowTaint: true,
-      imageTimeout: 15000,
+      logging: false,
     });
 
-    // Convert to blob and download
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        throw new Error('Failed to create blob from canvas');
-      }
-      
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }, 'image/png', 1.0);
+    // Download using toDataURL
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = filename;
+    link.click();
   } catch (error) {
-    console.error('Error downloading postcard as PNG:', error);
-    throw error;
+    console.error('PNG Download Error:', error);
+    throw new Error(`Failed to download PNG: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 /**
- * Download postcard as PDF
+ * Simple PDF download
  */
 export async function downloadPostcardAsPDF(
   elementId: string,
@@ -66,48 +52,34 @@ export async function downloadPostcardAsPDF(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Create canvas from the element
+    // Simple canvas capture
     const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: '#ffffff',
-      logging: false,
+      scale: 1,
       useCORS: true,
       allowTaint: true,
-      imageTimeout: 15000,
+      logging: false,
     });
 
-    // Standard postcard dimensions: 8.5" x 5.5"
-    const pdfWidth = 8.5;
-    const pdfHeight = 5.5;
-
-    // Create PDF
+    // Create PDF with postcard dimensions (8.5" x 5.5")
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'in',
-      format: [pdfWidth, pdfHeight],
+      format: [8.5, 5.5],
     });
 
-    // Calculate image dimensions
-    const imgWidth = pdfWidth;
+    // Calculate image size to fit PDF
+    const imgWidth = 8.5;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    // Convert canvas to image and add to PDF
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        throw new Error('Failed to create blob from canvas');
-      }
+    // Add image to PDF
+    const imgData = canvas.toDataURL('image/png');
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const imgData = reader.result as string;
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save(filename);
-      };
-      reader.readAsDataURL(blob);
-    }, 'image/png', 1.0);
+    // Save PDF
+    pdf.save(filename);
   } catch (error) {
-    console.error('Error downloading postcard as PDF:', error);
-    throw error;
+    console.error('PDF Download Error:', error);
+    throw new Error(`Failed to download PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -118,7 +90,7 @@ export function generateShareText(
   holidayName: string,
   greeting: string
 ): string {
-  return `${greeting} from our team at Luckee! 🎉 Generate your own seasonal postcard at Luckee.`;
+  return `${greeting} from our team at Luckee! 🎉`;
 }
 
 /**
@@ -145,11 +117,8 @@ export function generateFacebookShareURL(
   quote: string
 ): string {
   const params = new URLSearchParams({
-    app_id: '1234567890',
-    display: 'popup',
     href: pageUrl,
     quote: quote,
-    redirect_uri: pageUrl,
   });
   return `https://www.facebook.com/sharer/sharer.php?${params.toString()}`;
 }

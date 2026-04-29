@@ -15,6 +15,8 @@ import { PostcardToolbar } from '@/components/PostcardToolbar';
 import { SaveFavoriteButton } from '@/components/SaveFavoriteButton';
 import { FavoritesPanel } from '@/components/FavoritesPanel';
 import { HolidayNavigation } from '@/components/HolidayNavigation';
+import { HolidayCalendar } from '@/components/HolidayCalendar';
+import { EmailCampaignTool } from '@/components/EmailCampaignTool';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -45,6 +47,8 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMessageEditor, setShowMessageEditor] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showEmailTool, setShowEmailTool] = useState(false);
   const { favorites, addFavorite } = useFavorites();
 
   // Initialize with current/next holiday
@@ -284,6 +288,24 @@ export default function Home() {
               onEditMessage={() => setShowMessageEditor(true)}
             />
 
+            {/* Calendar and Email Tools */}
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowCalendar(!showCalendar)}
+                variant={showCalendar ? 'default' : 'outline'}
+                className="flex-1"
+              >
+                📅 Calendar
+              </Button>
+              <Button
+                onClick={() => setShowEmailTool(!showEmailTool)}
+                variant={showEmailTool ? 'default' : 'outline'}
+                className="flex-1"
+              >
+                ✉️ Email
+              </Button>
+            </div>
+
             {/* Tip */}
             <p className="text-xs text-slate-500 text-center" style={{ fontFamily: 'Georgia, serif' }}>
               💡 Save favorites, customize messages, download, or share!
@@ -298,6 +320,32 @@ export default function Home() {
               favorites={favorites}
               onSelectFavorite={handleLoadFavorite}
               onClose={() => setShowFavorites(false)}
+            />
+          </div>
+        )}
+
+        {/* Holiday Calendar */}
+        {showCalendar && (
+          <div className="mt-12">
+            <HolidayCalendar
+              onHolidaySelect={(selectedHoliday) => {
+                setHoliday(selectedHoliday);
+                setGreeting(getRandomGreeting(selectedHoliday));
+                setDecorElements(getRandomDecorElements(selectedHoliday, 3));
+                setShowCalendar(false);
+              }}
+              currentHolidayId={holiday?.id}
+              region={region}
+            />
+          </div>
+        )}
+
+        {/* Email Campaign Tool */}
+        {showEmailTool && (
+          <div className="mt-12">
+            <EmailCampaignTool
+              holiday={holiday}
+              greeting={greeting}
             />
           </div>
         )}

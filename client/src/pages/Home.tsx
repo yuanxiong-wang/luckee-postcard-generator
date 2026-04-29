@@ -49,7 +49,7 @@ export default function Home() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showEmailTool, setShowEmailTool] = useState(false);
-  const { favorites, addFavorite } = useFavorites();
+  const { favorites, addFavorite, removeFavorite } = useFavorites();
 
   // Initialize with current/next holiday
   useEffect(() => {
@@ -319,6 +319,7 @@ export default function Home() {
             <FavoritesPanel
               favorites={favorites}
               onSelectFavorite={handleLoadFavorite}
+              onRemoveFavorite={removeFavorite}
               onClose={() => setShowFavorites(false)}
             />
           </div>

@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart, X, Trash2, Download } from 'lucide-react';
-import { FavoritePostcard, removeFavorite } from '@/lib/favorites';
+import { FavoritePostcard } from '@/lib/favorites';
 import { toast } from 'sonner';
 import {
   downloadPostcardAsPNG,
@@ -17,19 +17,21 @@ import {
 interface FavoritesPanelProps {
   favorites: FavoritePostcard[];
   onSelectFavorite: (favorite: FavoritePostcard) => void;
+  onRemoveFavorite: (favoriteId: string) => void;
   onClose?: () => void;
 }
 
 export function FavoritesPanel({
   favorites,
   onSelectFavorite,
+  onRemoveFavorite,
   onClose,
 }: FavoritesPanelProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleRemoveFavorite = (favoriteId: string) => {
     try {
-      removeFavorite(favoriteId);
+      onRemoveFavorite(favoriteId);
       toast.success('Removed from favorites');
     } catch (error) {
       toast.error('Failed to remove favorite');

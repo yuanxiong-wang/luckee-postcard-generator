@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
-import { saveFavorite, removeFavorite, isFavorited } from '@/lib/favorites';
+import { saveFavorite, removeFavorite, isFavorited, getFavorites } from '@/lib/favorites';
 import { toast } from 'sonner';
 
 interface SaveFavoriteButtonProps {
@@ -44,20 +44,18 @@ export function SaveFavoriteButton({
 
     try {
       if (isFav) {
-        // Remove from favorites
-        // Find and remove the matching favorite
-        const favorites = JSON.parse(
-          localStorage.getItem('luckee_favorites') || '[]'
+        // Remove from favorites - find the matching favorite by ID
+        const favorites = getFavorites();
+        const favoriteToRemove = favorites.find(
+          (fav) =>
+            fav.holidayId === holidayId &&
+            fav.greeting === greeting &&
+            JSON.stringify(fav.decorElements) === JSON.stringify(decorElements)
         );
-        const filtered = favorites.filter(
-          (fav: any) =>
-            !(
-              fav.holidayId === holidayId &&
-              fav.greeting === greeting &&
-              JSON.stringify(fav.decorElements) === JSON.stringify(decorElements)
-            )
-        );
-        localStorage.setItem('luckee_favorites', JSON.stringify(filtered));
+        
+        if (favoriteToRemove) {
+          removeFavorite(favoriteToRemove.id);
+        }
         
         setIsFav(false);
         toast.success('Removed from favorites');

@@ -269,18 +269,6 @@ export default function Home() {
               onSave={() => addFavorite(holiday.id, holiday.name, greeting, decorElements, region)}
             />
 
-            {/* Show favorites button */}
-            {favorites.length > 0 && (
-              <Button
-                onClick={() => setShowFavorites(!showFavorites)}
-                variant="outline"
-                className="w-full"
-              >
-                <Heart className="w-4 h-4 mr-2 fill-orange-500 text-orange-500" />
-                View Favorites ({favorites.length})
-              </Button>
-            )}
-
             {/* Export and sharing toolbar */}
             <PostcardToolbar
               holiday={holiday}
@@ -312,6 +300,20 @@ export default function Home() {
             </p>
           </div>
         </div>
+
+        {/* View Favorites button - below postcard */}
+        {favorites.length > 0 && (
+          <div className="mt-6 lg:col-span-2">
+            <Button
+              onClick={() => setShowFavorites(!showFavorites)}
+              variant="outline"
+              className="w-full"
+            >
+              <Heart className="w-4 h-4 mr-2 fill-orange-500 text-orange-500" />
+              View Favorites ({favorites.length})
+            </Button>
+          </div>
+        )}
 
         {/* Favorites Panel */}
         {showFavorites && (

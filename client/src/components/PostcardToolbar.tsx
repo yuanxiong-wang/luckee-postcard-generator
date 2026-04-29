@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Share2, Edit2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   downloadPostcardAsPNG,
   downloadPostcardAsPDF,
@@ -39,8 +40,11 @@ export function PostcardToolbar({
         'postcard-container',
         `luckee-${holiday.id}-postcard.png`
       );
+      toast.success('Postcard downloaded as PNG!');
     } catch (error) {
-      setExportError('Failed to download PNG. Please try again.');
+      const errorMsg = 'Failed to download PNG. Please try again.';
+      setExportError(errorMsg);
+      toast.error(errorMsg);
       console.error(error);
     } finally {
       setIsExporting(false);
@@ -55,8 +59,11 @@ export function PostcardToolbar({
         'postcard-container',
         `luckee-${holiday.id}-postcard.pdf`
       );
+      toast.success('Postcard downloaded as PDF!');
     } catch (error) {
-      setExportError('Failed to download PDF. Please try again.');
+      const errorMsg = 'Failed to download PDF. Please try again.';
+      setExportError(errorMsg);
+      toast.error(errorMsg);
       console.error(error);
     } finally {
       setIsExporting(false);

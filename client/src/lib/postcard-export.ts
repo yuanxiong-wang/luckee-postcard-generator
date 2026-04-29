@@ -2,6 +2,7 @@
  * Postcard Export Utilities
  * 
  * Provides functions to export postcards as PNG or PDF files
+ * Handles cross-origin background images properly
  */
 
 /**
@@ -21,13 +22,16 @@ export async function downloadPostcardAsPNG(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Create canvas from the postcard element
+    // Create canvas from the postcard element with proper CORS handling
     const canvas = await html2canvas(element, {
       scale: 2, // Higher quality
       backgroundColor: '#ffffff',
       logging: false,
       useCORS: true,
       allowTaint: true,
+      imageTimeout: 5000, // Increase timeout for remote images
+      proxy: undefined, // Disable proxy to allow direct CORS
+      foreignObjectRendering: true,
     });
 
     // Convert canvas to blob and download
@@ -37,6 +41,7 @@ export async function downloadPostcardAsPNG(
         const link = document.createElement('a');
         link.href = url;
         link.download = filename;
+        link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -67,13 +72,16 @@ export async function downloadPostcardAsPDF(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Create canvas from the postcard element
+    // Create canvas from the postcard element with proper CORS handling
     const canvas = await html2canvas(element, {
       scale: 2,
       backgroundColor: '#ffffff',
       logging: false,
       useCORS: true,
       allowTaint: true,
+      imageTimeout: 5000,
+      proxy: undefined,
+      foreignObjectRendering: true,
     });
 
     // Standard postcard dimensions: 8.5" x 5.5" at 72 DPI

@@ -1,15 +1,45 @@
 /**
- * Postcard Export Utilities - Fixed Clipping Issue
+ * Postcard Export Utilities - Complete Fix for Clipping and Fonts
  */
 
 /**
- * PNG download with proper edge handling
+ * Preload fonts before rendering
+ */
+async function preloadFonts(): Promise<void> {
+  try {
+    // Preload Playfair Display
+    const playfair = new FontFace(
+      'Playfair Display',
+      'url(https://fonts.gstatic.com/s/playfairdisplay/v36/nuFvD-vgNJn_5_zf5_S_4ggM8tQ.woff2)',
+      { weight: '700', style: 'italic' }
+    );
+    
+    // Preload Georgia
+    const georgia = new FontFace(
+      'Georgia',
+      'local("Georgia")',
+      { weight: '400', style: 'italic' }
+    );
+
+    await Promise.all([playfair.load(), georgia.load()]);
+    document.fonts.add(playfair);
+    document.fonts.add(georgia);
+  } catch (error) {
+    console.warn('Font preload warning:', error);
+  }
+}
+
+/**
+ * PNG download with full content capture
  */
 export async function downloadPostcardAsPNG(
   elementId: string,
   filename: string = 'luckee-postcard.png'
 ): Promise<void> {
   try {
+    // Preload fonts first
+    await preloadFonts();
+    
     const html2canvas = (await import('html2canvas')).default;
     
     const element = document.getElementById(elementId);
@@ -17,40 +47,51 @@ export async function downloadPostcardAsPNG(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Clone element to avoid modifying original
+    // Clone element for export
     const clone = element.cloneNode(true) as HTMLElement;
     
-    // Remove overflow and border-radius to capture full content
+    // Remove all clipping styles
     clone.style.overflow = 'visible';
     clone.style.borderRadius = '0';
-    
-    // Temporarily add to DOM off-screen
     clone.style.position = 'fixed';
     clone.style.left = '-9999px';
     clone.style.top = '-9999px';
     clone.style.visibility = 'hidden';
+    clone.style.width = element.offsetWidth + 'px';
+    clone.style.height = element.offsetHeight + 'px';
+    
+    // Remove any max-width constraints
+    clone.style.maxWidth = 'none';
+    
     document.body.appendChild(clone);
 
-    // Wait for rendering
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Wait for fonts and rendering
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Capture with scale 2 for better quality
+    // Capture with high quality settings
     const canvas = await html2canvas(clone, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       logging: false,
       backgroundColor: '#ffffff',
+      width: clone.offsetWidth,
+      height: clone.offsetHeight,
+      windowWidth: clone.offsetWidth,
+      windowHeight: clone.offsetHeight,
+      foreignObjectRendering: false,
     });
 
-    // Remove clone
+    // Clean up
     document.body.removeChild(clone);
 
     // Download
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
     link.download = filename;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   } catch (error) {
     console.error('PNG Download Error:', error);
     throw new Error(`Failed to download PNG: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -58,13 +99,16 @@ export async function downloadPostcardAsPNG(
 }
 
 /**
- * PDF download with proper edge handling
+ * PDF download with full content capture
  */
 export async function downloadPostcardAsPDF(
   elementId: string,
   filename: string = 'luckee-postcard.pdf'
 ): Promise<void> {
   try {
+    // Preload fonts first
+    await preloadFonts();
+    
     const html2canvas = (await import('html2canvas')).default;
     const { jsPDF } = await import('jspdf');
 
@@ -73,33 +117,42 @@ export async function downloadPostcardAsPDF(
       throw new Error(`Element with ID "${elementId}" not found`);
     }
 
-    // Clone element to avoid modifying original
+    // Clone element for export
     const clone = element.cloneNode(true) as HTMLElement;
     
-    // Remove overflow and border-radius to capture full content
+    // Remove all clipping styles
     clone.style.overflow = 'visible';
     clone.style.borderRadius = '0';
-    
-    // Temporarily add to DOM off-screen
     clone.style.position = 'fixed';
     clone.style.left = '-9999px';
     clone.style.top = '-9999px';
     clone.style.visibility = 'hidden';
+    clone.style.width = element.offsetWidth + 'px';
+    clone.style.height = element.offsetHeight + 'px';
+    
+    // Remove any max-width constraints
+    clone.style.maxWidth = 'none';
+    
     document.body.appendChild(clone);
 
-    // Wait for rendering
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Wait for fonts and rendering
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Capture with scale 2 for better quality
+    // Capture with high quality settings
     const canvas = await html2canvas(clone, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       logging: false,
       backgroundColor: '#ffffff',
+      width: clone.offsetWidth,
+      height: clone.offsetHeight,
+      windowWidth: clone.offsetWidth,
+      windowHeight: clone.offsetHeight,
+      foreignObjectRendering: false,
     });
 
-    // Remove clone
+    // Clean up
     document.body.removeChild(clone);
 
     // Create PDF with postcard dimensions (8.5" x 5.5")

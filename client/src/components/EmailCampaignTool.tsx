@@ -12,7 +12,8 @@ import { useState } from 'react';
 import { Holiday } from '@/lib/holidays';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Plus, Trash2, Calendar, Send } from 'lucide-react';
+import { EmailPreviewModal } from '@/components/EmailPreviewModal';
+import { Mail, Plus, Trash2, Calendar, Send, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface EmailCampaign {
@@ -41,6 +42,8 @@ export function EmailCampaignTool({ holiday, greeting }: EmailCampaignToolProps)
   );
   const [recipients, setRecipients] = useState<string[]>([]);
   const [scheduledDate, setScheduledDate] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const addRecipient = () => {
     if (!newRecipient.trim()) {
@@ -69,7 +72,7 @@ export function EmailCampaignTool({ holiday, greeting }: EmailCampaignToolProps)
     setRecipients(recipients.filter((r) => r !== email));
   };
 
-  const createCampaign = () => {
+  const handlePreviewClick = () => {
     if (recipients.length === 0) {
       toast.error('Please add at least one recipient');
       return;
@@ -80,30 +83,41 @@ export function EmailCampaignTool({ holiday, greeting }: EmailCampaignToolProps)
       return;
     }
 
-    const campaign: EmailCampaign = {
-      id: `campaign-${Date.now()}`,
-      holidayId: holiday.id,
-      holidayName: holiday.name,
-      subject,
-      message,
-      recipients: [...recipients],
-      scheduledDate: scheduledDate || undefined,
-      createdAt: new Date(),
-    };
+    setShowPreview(true);
+  };
 
-    setCampaigns([...campaigns, campaign]);
+  const createCampaign = () => {
+    setIsCreating(true);
     
-    // Reset form
-    setRecipients([]);
-    setNewRecipient('');
-    setSubject(`Seasonal Greetings from Luckee - ${holiday.name}`);
-    setMessage(
-      `Dear Friend,\n\nWishing you a wonderful ${holiday.name}!\n\n${greeting}\n\nWarm regards,\nThe Luckee Team`
-    );
-    setScheduledDate('');
-    setShowForm(false);
+    // Simulate campaign creation delay
+    setTimeout(() => {
+      const campaign: EmailCampaign = {
+        id: `campaign-${Date.now()}`,
+        holidayId: holiday.id,
+        holidayName: holiday.name,
+        subject,
+        message,
+        recipients: [...recipients],
+        scheduledDate: scheduledDate || undefined,
+        createdAt: new Date(),
+      };
 
-    toast.success(`Campaign created for ${recipients.length} recipient(s)`);
+      setCampaigns([...campaigns, campaign]);
+      
+      // Reset form
+      setRecipients([]);
+      setNewRecipient('');
+      setSubject(`Seasonal Greetings from Luckee - ${holiday.name}`);
+      setMessage(
+        `Dear Friend,\n\nWishing you a wonderful ${holiday.name}!\n\n${greeting}\n\nWarm regards,\nThe Luckee Team`
+      );
+      setScheduledDate('');
+      setShowForm(false);
+      setShowPreview(false);
+      setIsCreating(false);
+
+      toast.success(`Campaign created for ${recipients.length} recipient(s)`);
+    }, 800);
   };
 
   const deleteCampaign = (id: string) => {
@@ -202,10 +216,25 @@ export function EmailCampaignTool({ holiday, greeting }: EmailCampaignToolProps)
             </p>
           </div>
 
-          <Button onClick={createCampaign} className="w-full" size="lg">
-            <Send className="w-4 h-4 mr-2" />
-            Create Campaign
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={handlePreviewClick} variant="outline" className="flex-1" size="lg">
+              <Eye className="w-4 h-4 mr-2" />
+              Preview
+            </Button>
+            <Button onClick={createCampaign} disabled={isCreating} className="flex-1" size="lg">
+              {isCreating ? (
+                <span className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  Creating...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Send className="w-4 h-4" />
+                  Create
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
       )}
 
@@ -253,6 +282,19 @@ export function EmailCampaignTool({ holiday, greeting }: EmailCampaignToolProps)
           <Mail className="w-12 h-12 mx-auto mb-2 opacity-50" />
           <p>No campaigns yet. Create one to get started!</p>
         </div>
+      )}
+
+      {/* Email Preview Modal */}
+      {showPreview && (
+        <EmailPreviewModal
+          subject={subject}
+          message={message}
+          recipientCount={recipients.length}
+          holidayName={holiday.name}
+          onClose={() => setShowPreview(false)}
+          onConfirm={createCampaign}
+          isLoading={isCreating}
+        />
       )}
     </div>
   );

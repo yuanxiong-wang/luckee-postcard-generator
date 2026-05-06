@@ -93,5 +93,3 @@ For issues or questions, please refer to the GitHub repository.
 ---
 
 **Ready to create beautiful seasonal postcards?** Start generating now! 🎉
-
-

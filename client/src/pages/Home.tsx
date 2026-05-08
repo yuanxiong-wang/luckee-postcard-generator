@@ -273,6 +273,7 @@ export default function Home() {
             <PostcardToolbar
               holiday={holiday}
               greeting={greeting}
+              decorElements={decorElements}
               onEditMessage={() => setShowMessageEditor(true)}
             />
 

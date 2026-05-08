@@ -6,69 +6,31 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Share2, Edit2, Loader2 } from 'lucide-react';
+import { Download, Share2, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  downloadPostcardAsPNG,
-  downloadPostcardAsPDF,
   generateLinkedInShareURL,
   generateFacebookShareURL,
   openShareWindow,
   generateShareText,
 } from '@/lib/postcard-export';
 import { Holiday } from '@/lib/holidays';
+import { PostcardPreviewModal } from './PostcardPreviewModal';
 
 interface PostcardToolbarProps {
   holiday: Holiday;
   greeting: string;
+  decorElements: string[];
   onEditMessage: () => void;
 }
 
 export function PostcardToolbar({
   holiday,
   greeting,
+  decorElements,
   onEditMessage,
 }: PostcardToolbarProps) {
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportError, setExportError] = useState('');
-
-  const handleDownloadPNG = async () => {
-    setIsExporting(true);
-    setExportError('');
-    try {
-      await downloadPostcardAsPNG(
-        'postcard-container',
-        `luckee-${holiday.id}-postcard.png`
-      );
-      toast.success('Postcard downloaded as PNG!');
-    } catch (error) {
-      const errorMsg = 'Failed to download PNG. Please try again.';
-      setExportError(errorMsg);
-      toast.error(errorMsg);
-      console.error(error);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handleDownloadPDF = async () => {
-    setIsExporting(true);
-    setExportError('');
-    try {
-      await downloadPostcardAsPDF(
-        'postcard-container',
-        `luckee-${holiday.id}-postcard.pdf`
-      );
-      toast.success('Postcard downloaded as PDF!');
-    } catch (error) {
-      const errorMsg = 'Failed to download PDF. Please try again.';
-      setExportError(errorMsg);
-      toast.error(errorMsg);
-      console.error(error);
-    } finally {
-      setIsExporting(false);
-    }
-  };
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleShareLinkedIn = () => {
     const pageUrl = window.location.href;
@@ -87,48 +49,18 @@ export function PostcardToolbar({
 
   return (
     <div className="space-y-3">
-      {/* Export Section */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h3
-          className="text-sm font-semibold text-slate-800 mb-3"
-          style={{ fontFamily: 'Georgia, serif' }}
-        >
-          Download Postcard
-        </h3>
-        <div className="flex gap-2">
-          <Button
-            onClick={handleDownloadPNG}
-            disabled={isExporting}
-            size="sm"
-            className="flex-1 text-xs"
-            variant="outline"
-          >
-            {isExporting ? (
-              <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4 mr-1" />
-            )}
-            PNG
-          </Button>
-          <Button
-            onClick={handleDownloadPDF}
-            disabled={isExporting}
-            size="sm"
-            className="flex-1 text-xs"
-            variant="outline"
-          >
-            {isExporting ? (
-              <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4 mr-1" />
-            )}
-            PDF
-          </Button>
-        </div>
-        {exportError && (
-          <p className="text-xs text-red-500 mt-2">{exportError}</p>
-        )}
-      </div>
+      {/* Download Preview Button */}
+      <Button
+        onClick={() => setShowPreview(true)}
+        className="w-full justify-center"
+        style={{
+          backgroundColor: holiday.colors.accent,
+          color: '#f5f1e8',
+        }}
+      >
+        <Download className="w-4 h-4 mr-2" />
+        Download Postcard
+      </Button>
 
       {/* Edit Message Section */}
       <Button
@@ -139,6 +71,16 @@ export function PostcardToolbar({
         <Edit2 className="w-4 h-4 mr-2" />
         Edit Message
       </Button>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <PostcardPreviewModal
+          holiday={holiday}
+          greeting={greeting}
+          decorElements={decorElements}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
 
       {/* Share Section */}
       <div className="bg-white rounded-lg shadow-md p-4">

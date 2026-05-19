@@ -35,7 +35,7 @@ export function FavoritesPanel({
       toast.success('Removed from favorites');
     } catch (error) {
       toast.error('Failed to remove favorite');
-      console.error(error);
+      console.error('Error removing favorite:', error instanceof Error ? error.message : String(error));
     }
   };
 

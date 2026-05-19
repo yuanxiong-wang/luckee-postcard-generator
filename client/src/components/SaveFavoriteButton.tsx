@@ -69,7 +69,7 @@ export function SaveFavoriteButton({
       }
     } catch (error) {
       toast.error('Failed to update favorites');
-      console.error(error);
+      console.error('Favorites toggle error:', error instanceof Error ? error.message : String(error));
     } finally {
       setIsLoading(false);
     }

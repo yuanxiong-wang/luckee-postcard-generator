@@ -42,7 +42,7 @@ export function PostcardPreviewModal({
       onClose();
     } catch (error) {
       toast.error('Failed to download PNG. Please try again.');
-      console.error(error);
+      console.error('PNG export error:', error instanceof Error ? error.message : String(error));
     } finally {
       setIsExporting(false);
       setExportFormat(null);
@@ -61,7 +61,7 @@ export function PostcardPreviewModal({
       onClose();
     } catch (error) {
       toast.error('Failed to download PDF. Please try again.');
-      console.error(error);
+      console.error('PDF export error:', error instanceof Error ? error.message : String(error));
     } finally {
       setIsExporting(false);
       setExportFormat(null);

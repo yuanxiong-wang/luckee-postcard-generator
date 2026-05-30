@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import { saveFavorite, removeFavorite, isFavorited, getFavorites } from '@/lib/favorites';
+import type { AppRegion } from '@/lib/holidays';
 import { toast } from 'sonner';
 
 interface SaveFavoriteButtonProps {
@@ -15,7 +16,7 @@ interface SaveFavoriteButtonProps {
   holidayName: string;
   greeting: string;
   decorElements: string[];
-  region: 'US' | 'UK' | 'both';
+  region: AppRegion;
   onSave?: () => void;
   onRemove?: () => void;
 }

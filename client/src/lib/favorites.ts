@@ -4,6 +4,8 @@
  * Handles saving, loading, and managing favorite postcards using localStorage
  */
 
+import type { AppRegion } from './holidays';
+
 export interface FavoritePostcard {
   id: string;
   holidayId: string;
@@ -11,7 +13,7 @@ export interface FavoritePostcard {
   greeting: string;
   decorElements: string[];
   timestamp: number;
-  region: 'US' | 'UK' | 'both';
+  region: AppRegion;
 }
 
 const STORAGE_KEY = 'luckee_favorites';
@@ -42,7 +44,7 @@ export function saveFavorite(
   holidayName: string,
   greeting: string,
   decorElements: string[],
-  region: 'US' | 'UK' | 'both'
+  region: AppRegion
 ): FavoritePostcard {
   try {
     const favorites = getFavorites();

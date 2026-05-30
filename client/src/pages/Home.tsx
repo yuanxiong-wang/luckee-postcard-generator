@@ -31,16 +31,15 @@ import {
   getRandomDecorElements,
   getNextHoliday,
   getPreviousHoliday,
-  Holiday,
+  getHolidayById,
 } from '@/lib/holidays';
+import type { AppRegion, Holiday } from '@/lib/holidays';
 import { useFavorites } from '@/hooks/useFavorites';
 import { FavoritePostcard } from '@/lib/favorites';
 import { RefreshCw, Heart } from 'lucide-react';
 
-type Region = 'US' | 'UK' | 'both';
-
 export default function Home() {
-  const [region, setRegion] = useState<Region>('both');
+  const [region, setRegion] = useState<AppRegion>('both');
   const [holiday, setHoliday] = useState<Holiday | null>(null);
   const [greeting, setGreeting] = useState<string>('');
   const [decorElements, setDecorElements] = useState<string[]>([]);
@@ -76,8 +75,8 @@ export default function Home() {
 
   // Change region
   const handleRegionChange = (newRegion: string) => {
-    setRegion(newRegion as Region);
-    const newHoliday = getCurrentOrNextHoliday(newRegion as Region);
+    setRegion(newRegion as AppRegion);
+    const newHoliday = getCurrentOrNextHoliday(newRegion as AppRegion);
     setHoliday(newHoliday);
     setGreeting(getRandomGreeting(newHoliday));
     setDecorElements(getRandomDecorElements(newHoliday, 3));
@@ -92,10 +91,10 @@ export default function Home() {
   // Handle loading a favorite
   const handleLoadFavorite = (favorite: FavoritePostcard) => {
     setRegion(favorite.region);
-    const favoriteHoliday = getCurrentOrNextHoliday(favorite.region);
+    const favoriteHoliday = getHolidayById(favorite.holidayId);
     
     // Find the holiday that matches the favorite
-    if (favoriteHoliday.id === favorite.holidayId) {
+    if (favoriteHoliday) {
       setHoliday(favoriteHoliday);
     }
     
@@ -195,9 +194,10 @@ export default function Home() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="both">Both US & UK</SelectItem>
+                  <SelectItem value="both">US, UK & Canada</SelectItem>
                   <SelectItem value="US">US Only</SelectItem>
                   <SelectItem value="UK">UK Only</SelectItem>
+                  <SelectItem value="CA">Canada Only</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -356,7 +356,7 @@ export default function Home() {
         <div className="mt-16 text-center">
           <p className="text-sm text-slate-600 max-w-2xl mx-auto" style={{ fontFamily: 'Georgia, serif' }}>
             Celebrate every season with Luckee. Our postcard generator creates unique,
-            heartfelt greetings for US and UK holidays throughout the year.
+            heartfelt greetings for US, UK, and Canadian holidays throughout the year.
           </p>
         </div>
       </div>

@@ -6,12 +6,13 @@
  */
 
 import { useState } from 'react';
-import { holidays, Holiday, getHolidaysByRegion } from '@/lib/holidays';
+import { getHolidayDateString, getHolidaysByRegion } from '@/lib/holidays';
+import type { AppRegion, Holiday } from '@/lib/holidays';
 
 interface HolidayCalendarProps {
   onHolidaySelect: (holiday: Holiday) => void;
   currentHolidayId?: string;
-  region?: 'US' | 'UK' | 'both';
+  region?: AppRegion;
 }
 
 export function HolidayCalendar({ onHolidaySelect, currentHolidayId, region = 'both' }: HolidayCalendarProps) {
@@ -73,7 +74,7 @@ export function HolidayCalendar({ onHolidaySelect, currentHolidayId, region = 'b
                       <div className="font-medium">{holiday.name}</div>
                       <div className="text-sm opacity-75">
                         {(() => {
-                          const [month, day] = holiday.date.split('-').map(Number);
+                          const [month, day] = getHolidayDateString(holiday).split('-').map(Number);
                           const date = new Date(2024, month - 1, day);
                           return date.toLocaleDateString('en-US', {
                             month: 'short',

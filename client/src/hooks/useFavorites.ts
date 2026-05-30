@@ -13,6 +13,7 @@ import {
   isFavorited,
   getFavoritesCount,
 } from '@/lib/favorites';
+import type { AppRegion } from '@/lib/holidays';
 
 export function useFavorites() {
   const [favorites, setFavorites] = useState<FavoritePostcard[]>([]);
@@ -32,7 +33,7 @@ export function useFavorites() {
       holidayName: string,
       greeting: string,
       decorElements: string[],
-      region: 'US' | 'UK' | 'both'
+      region: AppRegion
     ): FavoritePostcard => {
       const newFavorite = saveFavorite(
         holidayId,

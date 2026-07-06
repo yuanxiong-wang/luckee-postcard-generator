@@ -86,8 +86,8 @@ export function SaveFavoriteButton({
       style={
         isFav
           ? {
-              backgroundColor: '#d84315',
-              color: '#f5f1e8',
+              backgroundColor: '#b58b43',
+              color: '#142f34',
             }
           : {}
       }

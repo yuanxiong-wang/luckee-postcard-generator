@@ -1,11 +1,10 @@
 /**
  * Home Page - Luckee Postcard Generator
  * 
- * Design Philosophy: Warm Nostalgia with Hand-Drawn Character
- * - Asymmetric layout with postcard as focal point
- * - Warm seasonal colors and organic botanical elements
- * - Hand-drawn typography for greetings, elegant serif for Luckee signature
- * - Smooth, natural animations enhancing tactile, handcrafted feeling
+ * Design Philosophy: elegant stationery studio
+ * - Postcard as a finished print proof on a subtle registration grid
+ * - Cool porcelain surface, ink typography, and restrained brass accents
+ * - Controls stay quiet so the generated postcard remains the focal point
  */
 
 import { useState, useEffect } from 'react';
@@ -36,7 +35,7 @@ import {
 import type { AppRegion, Holiday } from '@/lib/holidays';
 import { useFavorites } from '@/hooks/useFavorites';
 import { FavoritePostcard } from '@/lib/favorites';
-import { RefreshCw, Heart } from 'lucide-react';
+import { CalendarDays, Heart, Mail, RefreshCw } from 'lucide-react';
 
 export default function Home() {
   const [region, setRegion] = useState<AppRegion>('both');
@@ -125,38 +124,28 @@ export default function Home() {
 
   if (!holiday) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="studio-shell flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin mb-4">
-            <RefreshCw className="w-8 h-8 text-slate-400" />
+            <RefreshCw className="w-8 h-8 text-[#7b6a44]" />
           </div>
-          <p className="text-slate-600">Loading postcard...</p>
+          <p className="studio-copy">Loading postcard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-slate-100 py-8 md:py-16">
+    <div className="studio-shell py-8 md:py-14">
       <div className="container max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h1
-            className="mb-3"
-            style={{
-              fontSize: '48px',
-              color: '#1a3a52',
-              fontFamily: 'Playfair Display, serif',
-              fontWeight: '700',
-              fontStyle: 'italic',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Luckee Seasonal Greetings
-          </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Generate beautiful seasonal postcards for every holiday throughout the year.
-            Each postcard is uniquely crafted with warmth and care.
+        <div className="mb-10 grid gap-5 md:grid-cols-[1.15fr_0.85fr] md:items-end">
+          <div>
+            <p className="studio-kicker mb-3">Seasonal correspondence desk</p>
+            <h1 className="studio-title">Luckee Seasonal Greetings</h1>
+          </div>
+          <p className="studio-copy max-w-xl md:justify-self-end md:text-right">
+            Compose a polished holiday postcard for clients, partners, and teams across US, UK, and Canadian calendars.
           </p>
         </div>
 
@@ -170,7 +159,7 @@ export default function Home() {
               transform: isGenerating ? 'scale(0.98)' : 'scale(1)',
             }}
           >
-            <div id="postcard-container">
+            <div id="postcard-container" className="studio-stage">
               <Postcard
                 holiday={holiday}
                 greeting={greeting}
@@ -182,12 +171,9 @@ export default function Home() {
           {/* Controls sidebar */}
           <div className="space-y-6">
             {/* Region selector */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <label
-                className="block text-sm font-semibold text-slate-700 mb-3"
-                style={{ fontFamily: 'Georgia, serif' }}
-              >
-                Select Region
+            <div className="studio-panel p-5">
+              <label className="studio-field-label mb-3 block">
+                Region
               </label>
               <Select value={region} onValueChange={handleRegionChange}>
                 <SelectTrigger className="w-full">
@@ -211,25 +197,16 @@ export default function Home() {
             />
 
             {/* Holiday info */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3
-                className="text-lg font-semibold text-slate-800 mb-2"
-                style={{ fontFamily: 'Georgia, serif' }}
-              >
-                Current Holiday
+            <div className="studio-panel p-5">
+              <h3 className="studio-field-label mb-2">
+                Current holiday
               </h3>
-              <p
-                className="text-sm text-slate-600 mb-4"
-                style={{ fontFamily: 'Georgia, serif' }}
-              >
+              <p className="mb-4 font-semibold text-[#142f34]">
                 {holiday.name}
               </p>
               <div className="flex flex-wrap gap-2">
                 {holiday.decorElements.slice(0, 3).map((element, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs"
-                    style={{ fontFamily: 'Georgia, serif' }}>
+                  <span key={idx} className="studio-chip">
                     {element.replace(/-/g, ' ')}
                   </span>
                 ))}
@@ -240,21 +217,21 @@ export default function Home() {
             <Button
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="w-full py-6 text-lg font-semibold transition-all duration-200 hover:shadow-lg active:scale-95"
+              className="w-full py-6 text-base font-bold transition-all duration-200 hover:shadow-lg active:scale-95"
               style={{
-                backgroundColor: holiday.colors.accent,
-                color: '#f5f1e8',
+                backgroundColor: '#1d4f4a',
+                color: '#fbfaf6',
               }}
             >
               {isGenerating ? (
                 <span className="flex items-center gap-2">
                   <RefreshCw className="w-5 h-5 animate-spin" />
-                  Generating...
+                  Refreshing...
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <RefreshCw className="w-5 h-5" />
-                  Generate New Postcard
+                  Refresh postcard
                 </span>
               )}
             </Button>
@@ -284,21 +261,18 @@ export default function Home() {
                 variant={showCalendar ? 'default' : 'outline'}
                 className="flex-1"
               >
-                📅 Calendar
+                <CalendarDays className="h-4 w-4" />
+                Calendar
               </Button>
               <Button
                 onClick={() => setShowEmailTool(!showEmailTool)}
                 variant={showEmailTool ? 'default' : 'outline'}
                 className="flex-1"
               >
-                ✉️ Email
+                <Mail className="h-4 w-4" />
+                Email
               </Button>
             </div>
-
-            {/* Tip */}
-            <p className="text-xs text-slate-500 text-center" style={{ fontFamily: 'Georgia, serif' }}>
-              💡 Save favorites, customize messages, download, or share!
-            </p>
           </div>
         </div>
 
@@ -354,9 +328,8 @@ export default function Home() {
 
         {/* Footer info */}
         <div className="mt-16 text-center">
-          <p className="text-sm text-slate-600 max-w-2xl mx-auto" style={{ fontFamily: 'Georgia, serif' }}>
-            Celebrate every season with Luckee. Our postcard generator creates unique,
-            heartfelt greetings for US, UK, and Canadian holidays throughout the year.
+          <p className="studio-copy max-w-2xl mx-auto text-sm">
+            Seasonal greetings shaped for the moments your clients and teams actually observe.
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
-/* Google Fonts for hand-drawn aesthetic */
-@import url('https://fonts.googleapis.com/css2?family=Brush+Script+MT&family=Playfair+Display:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+/* Google Fonts for a restrained studio stationery feel */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Manrope:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -46,20 +46,20 @@
 }
 
 :root {
-  --primary: #d84315;
-  --primary-foreground: #f5f1e8;
-  --sidebar-primary: #d84315;
-  --sidebar-primary-foreground: #f5f1e8;
+  --primary: #1d4f4a;
+  --primary-foreground: #fbfaf6;
+  --sidebar-primary: #1d4f4a;
+  --sidebar-primary-foreground: #fbfaf6;
   --chart-1: var(--color-blue-300);
   --chart-2: var(--color-blue-500);
   --chart-3: var(--color-blue-600);
   --chart-4: var(--color-blue-700);
   --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: #f5f1e8;
-  --foreground: #1a3a52;
-  --card: #ffffff;
-  --card-foreground: #1a3a52;
+  --radius: 0.5rem;
+  --background: #e6ece6;
+  --foreground: #142f34;
+  --card: #fbfaf6;
+  --card-foreground: #142f34;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.235 0.015 65);
   --secondary: oklch(0.98 0.001 286.375);
@@ -72,7 +72,7 @@
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
+  --ring: #b58b43;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.235 0.015 65);
   --sidebar-accent: oklch(0.967 0.001 286.375);
@@ -122,6 +122,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -133,6 +134,11 @@
   input[type="checkbox"]:not(:disabled),
   input[type="radio"]:not(:disabled) {
     @apply cursor-pointer;
+  }
+
+  ::selection {
+    background: #c0d2c8;
+    color: #142f34;
   }
 }
 
@@ -156,6 +162,152 @@
     margin-right: auto;
     padding-left: 1rem; /* 16px - mobile padding */
     padding-right: 1rem;
+  }
+
+  .studio-shell {
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(20, 47, 52, 0.045) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(20, 47, 52, 0.045) 1px, transparent 1px),
+      radial-gradient(circle at top left, rgba(181, 139, 67, 0.16), transparent 34rem),
+      linear-gradient(135deg, #e6ece6 0%, #f7f6f0 48%, #d7e3dd 100%);
+    background-size: 42px 42px, 42px 42px, auto, auto;
+  }
+
+  .studio-kicker {
+    color: #7b6a44;
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .studio-title {
+    color: #142f34;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 3.75rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 0.95;
+  }
+
+  .studio-copy {
+    color: #526569;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .studio-panel {
+    background: rgba(251, 250, 246, 0.88);
+    border: 1px solid rgba(20, 47, 52, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 18px 45px rgba(20, 47, 52, 0.10);
+  }
+
+  .studio-panel-tight {
+    background: rgba(251, 250, 246, 0.82);
+    border: 1px solid rgba(20, 47, 52, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(20, 47, 52, 0.08);
+  }
+
+  .studio-stage {
+    position: relative;
+    padding: 1rem;
+  }
+
+  .studio-stage::before,
+  .studio-stage::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .studio-stage::before {
+    inset: 0;
+    border: 1px solid rgba(181, 139, 67, 0.42);
+    border-radius: 8px;
+    transform: rotate(-0.7deg);
+  }
+
+  .studio-stage::after {
+    height: 2px;
+    left: 2.25rem;
+    right: 2.25rem;
+    top: 0.55rem;
+    background: #b58b43;
+  }
+
+  .studio-postcard {
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(251, 250, 246, 0.5);
+    border-radius: 8px;
+    box-shadow:
+      0 28px 60px rgba(20, 47, 52, 0.22),
+      0 2px 0 rgba(255, 255, 255, 0.55) inset;
+  }
+
+  .studio-field-label {
+    color: #284b50;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .studio-chip {
+    background: #e7eee9;
+    border: 1px solid rgba(20, 47, 52, 0.12);
+    border-radius: 999px;
+    color: #284b50;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .postcard-greeting {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 3.5rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 0.96;
+  }
+
+  .postcard-note {
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .postcard-signature {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 2.4rem;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  @media (max-width: 767px) {
+    .studio-title {
+      font-size: 2.75rem;
+    }
+
+    .studio-stage {
+      padding: 0.6rem;
+    }
+
+    .postcard-greeting {
+      font-size: 2.15rem;
+    }
+
+    .postcard-signature {
+      font-size: 1.7rem;
+    }
   }
 
   .flex {

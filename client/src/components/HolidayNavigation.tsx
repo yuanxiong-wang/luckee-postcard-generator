@@ -22,7 +22,7 @@ export function HolidayNavigation({
   disabled = false,
 }: HolidayNavigationProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="studio-panel-tight p-4">
       <div className="flex items-center gap-2">
         <Button
           onClick={onPrevious}
@@ -37,12 +37,7 @@ export function HolidayNavigation({
         </Button>
 
         <div className="flex-1 text-center px-2">
-          <p
-            className="text-xs font-semibold text-slate-600"
-            style={{ fontFamily: 'Georgia, serif' }}
-          >
-            Browse Holidays
-          </p>
+          <p className="studio-field-label text-center">Browse</p>
         </div>
 
         <Button
@@ -58,11 +53,8 @@ export function HolidayNavigation({
         </Button>
       </div>
 
-      <p
-        className="text-xs text-slate-500 text-center mt-2"
-        style={{ fontFamily: 'Georgia, serif' }}
-      >
-        Currently viewing: <span className="font-semibold">{currentHoliday.name}</span>
+      <p className="mt-2 text-center text-xs text-[#526569]">
+        Viewing <span className="font-semibold text-[#142f34]">{currentHoliday.name}</span>
       </p>
     </div>
   );

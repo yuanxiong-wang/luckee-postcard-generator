@@ -7,7 +7,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Share2, Edit2 } from 'lucide-react';
-import { toast } from 'sonner';
 import {
   generateLinkedInShareURL,
   generateFacebookShareURL,
@@ -54,8 +53,8 @@ export function PostcardToolbar({
         onClick={() => setShowPreview(true)}
         className="w-full justify-center"
         style={{
-          backgroundColor: holiday.colors.accent,
-          color: '#f5f1e8',
+          backgroundColor: '#1d4f4a',
+          color: '#fbfaf6',
         }}
       >
         <Download className="w-4 h-4 mr-2" />
@@ -83,13 +82,8 @@ export function PostcardToolbar({
       )}
 
       {/* Share Section */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h3
-          className="text-sm font-semibold text-slate-800 mb-3"
-          style={{ fontFamily: 'Georgia, serif' }}
-        >
-          Share on Social Media
-        </h3>
+      <div className="studio-panel-tight p-4">
+        <h3 className="studio-field-label mb-3">Share</h3>
         <div className="flex gap-2">
           <Button
             onClick={handleShareLinkedIn}

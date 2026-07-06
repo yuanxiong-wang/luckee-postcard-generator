@@ -50,6 +50,8 @@ export const holidays: Holiday[] = [
       'Cheers to New Beginnings',
       'Welcome to a Fresh Start',
       'Here\'s to New Adventures',
+      'A Bright Year Ahead',
+      'New Year, Fresh Momentum',
     ],
     colors: {
       background: '#1a3a52',
@@ -76,6 +78,8 @@ export const holidays: Holiday[] = [
       'Spreading Love & Cheer',
       'With Love & Appreciation',
       'Celebrating Connection',
+      'Warm Wishes from Our Team',
+      'A Note of Appreciation',
     ],
     colors: {
       background: '#f5f1e8',
@@ -102,6 +106,8 @@ export const holidays: Holiday[] = [
       'May Your Day Be Lucky',
       'Feeling Lucky',
       'Luck of the Irish',
+      'Sending a Little Luck',
+      'Good Fortune to You',
     ],
     colors: {
       background: '#f5f1e8',
@@ -129,6 +135,8 @@ export const holidays: Holiday[] = [
       'Wishing You a Joyful Easter',
       'Spring Blessings',
       'Easter Joy & Renewal',
+      'A Season of Renewal',
+      'Warm Spring Wishes',
     ],
     colors: {
       background: '#f5f1e8',
@@ -156,6 +164,8 @@ export const holidays: Holiday[] = [
       'Celebrating Service & Hope',
       'Keeping the Dream Alive',
       'A Day of Purpose',
+      'Honoring a Legacy of Hope',
+      'Reflecting with Purpose',
     ],
     colors: {
       background: '#f5f1e8',
@@ -183,6 +193,8 @@ export const holidays: Holiday[] = [
       'Celebrating Time Together',
       'Warm Wishes to Your Family',
       'Together Is the Best Place',
+      'A Day for What Matters',
+      'Sending Family Day Warmth',
     ],
     colors: {
       background: '#f5f1e8',
@@ -210,6 +222,8 @@ export const holidays: Holiday[] = [
       'Honoring Leadership',
       'A Day to Reflect & Remember',
       'Celebrating Civic Spirit',
+      'With Respect for Service',
+      'Reflecting on Leadership',
     ],
     colors: {
       background: '#1a3a52',
@@ -237,6 +251,8 @@ export const holidays: Holiday[] = [
       'Cheers to the Long Weekend',
       'Celebrating Spring in Canada',
       'Warm Victoria Day Wishes',
+      'A Bright Start to Summer',
+      'Enjoy the Holiday Weekend',
     ],
     colors: {
       background: '#f5f1e8',
@@ -264,6 +280,8 @@ export const holidays: Holiday[] = [
       'Honoring Memorial Day',
       'With Respect & Remembrance',
       'Grateful for Their Service',
+      'Remembering Their Sacrifice',
+      'With Honor and Gratitude',
     ],
     colors: {
       background: '#1a3a52',
@@ -290,6 +308,8 @@ export const holidays: Holiday[] = [
       'Celebrating the Longest Day',
       'Bright Days Ahead',
       'Sunshine & Warmth',
+      'Here Comes the Light',
+      'Golden Hours Ahead',
     ],
     colors: {
       background: '#f9f3e6',
@@ -316,6 +336,8 @@ export const holidays: Holiday[] = [
       'Celebrating Freedom',
       'Land of the Free',
       'Stars & Stripes',
+      'Red, White & Bright',
+      'Wishing You a Sparkling Fourth',
     ],
     colors: {
       background: '#1a3a52',
@@ -342,6 +364,8 @@ export const holidays: Holiday[] = [
       'Celebrating Freedom',
       'Honoring Liberation',
       'Joy, Freedom & Reflection',
+      'A Day of Freedom and Hope',
+      'Honoring the Journey Forward',
     ],
     colors: {
       background: '#f5f1e8',
@@ -368,6 +392,8 @@ export const holidays: Holiday[] = [
       'Celebrating Canada',
       'True North Cheer',
       'Maple Leaf Wishes',
+      'Proudly Wishing You Well',
+      'Cheers from Coast to Coast',
     ],
     colors: {
       background: '#f5f1e8',
@@ -395,6 +421,8 @@ export const holidays: Holiday[] = [
       'Cheers to Hard Work',
       'Enjoy the Long Weekend',
       'Celebrating Every Contribution',
+      'With Thanks for All You Do',
+      'Rest, Recharge & Celebrate',
     ],
     colors: {
       background: '#f9f3e6',
@@ -422,6 +450,8 @@ export const holidays: Holiday[] = [
       'Cheers to Hard Work',
       'Enjoy the Long Weekend',
       'Celebrating Every Contribution',
+      'With Thanks for All You Do',
+      'Rest, Recharge & Celebrate',
     ],
     colors: {
       background: '#f9f3e6',
@@ -448,6 +478,8 @@ export const holidays: Holiday[] = [
       'Honoring Truth and Reconciliation',
       'A Day for Listening',
       'Remembering Every Child',
+      'Reflecting with Care',
+      'Truth Before Reconciliation',
     ],
     colors: {
       background: '#f9f3e6',
@@ -475,6 +507,8 @@ export const holidays: Holiday[] = [
       'Grateful for You',
       'Thankful & Blessed',
       'Harvest Gratitude',
+      'Warm Harvest Wishes',
+      'With Thanks This Season',
     ],
     colors: {
       background: '#5d4037',
@@ -501,6 +535,8 @@ export const holidays: Holiday[] = [
       'Spooky Season',
       'Trick or Treat',
       'Boo!',
+      'A Little Seasonal Magic',
+      'Frightfully Fun Wishes',
     ],
     colors: {
       background: '#2c1810',
@@ -528,6 +564,8 @@ export const holidays: Holiday[] = [
       'Grateful for You',
       'Thankful & Blessed',
       'Gratitude & Joy',
+      'Warm Harvest Wishes',
+      'With Thanks This Season',
     ],
     colors: {
       background: '#5d4037',
@@ -554,6 +592,8 @@ export const holidays: Holiday[] = [
       'With Gratitude for Your Service',
       'Happy Veterans Day',
       'Remembering Courage & Service',
+      'Honoring All Who Served',
+      'With Respect and Thanks',
     ],
     colors: {
       background: '#1a3a52',
@@ -580,6 +620,8 @@ export const holidays: Holiday[] = [
       'Lest We Forget',
       'Honoring Service & Sacrifice',
       'With Respect & Remembrance',
+      'Remembering Those Who Served',
+      'In Gratitude and Reflection',
     ],
     colors: {
       background: '#f5f1e8',
@@ -606,6 +648,8 @@ export const holidays: Holiday[] = [
       'Merry Christmas',
       'Festive Cheer',
       'Wishing You Joy',
+      'Peace and Warmth to You',
+      'Season\'s Brightest Wishes',
     ],
     colors: {
       background: '#1a3a52',
@@ -632,6 +676,8 @@ export const holidays: Holiday[] = [
       'Sharing the Joy',
       'Giving & Gratitude',
       'Boxing Day Cheer',
+      'Warm Wishes After Christmas',
+      'A Day for Giving Back',
     ],
     colors: {
       background: '#1a3a52',

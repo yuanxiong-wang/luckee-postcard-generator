@@ -1,29 +1,30 @@
 /**
  * Home Page - Luckee Postcard Generator
- * 
+ *
  * Design Philosophy: elegant stationery studio
  * - Postcard as a finished print proof on a subtle registration grid
  * - Cool porcelain surface, ink typography, and restrained brass accents
  * - Controls stay quiet so the generated postcard remains the focal point
  */
 
-import { useState, useEffect } from 'react';
-import { Postcard } from '@/components/Postcard';
-import { MessageEditor } from '@/components/MessageEditor';
-import { PostcardToolbar } from '@/components/PostcardToolbar';
-import { SaveFavoriteButton } from '@/components/SaveFavoriteButton';
-import { FavoritesPanel } from '@/components/FavoritesPanel';
-import { HolidayNavigation } from '@/components/HolidayNavigation';
-import { HolidayCalendar } from '@/components/HolidayCalendar';
-import { EmailCampaignTool } from '@/components/EmailCampaignTool';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { Postcard } from "@/components/Postcard";
+import { PostcardStyleControls } from "@/components/PostcardStyleControls";
+import { MessageEditor } from "@/components/MessageEditor";
+import { PostcardToolbar } from "@/components/PostcardToolbar";
+import { SaveFavoriteButton } from "@/components/SaveFavoriteButton";
+import { FavoritesPanel } from "@/components/FavoritesPanel";
+import { HolidayNavigation } from "@/components/HolidayNavigation";
+import { HolidayCalendar } from "@/components/HolidayCalendar";
+import { EmailCampaignTool } from "@/components/EmailCampaignTool";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   getCurrentOrNextHoliday,
   getRandomGreeting,
@@ -31,17 +32,31 @@ import {
   getNextHoliday,
   getPreviousHoliday,
   getHolidayById,
-} from '@/lib/holidays';
-import type { AppRegion, Holiday } from '@/lib/holidays';
-import { useFavorites } from '@/hooks/useFavorites';
-import { FavoritePostcard } from '@/lib/favorites';
-import { CalendarDays, Heart, Mail, RefreshCw } from 'lucide-react';
+} from "@/lib/holidays";
+import type { AppRegion, Holiday } from "@/lib/holidays";
+import {
+  DEFAULT_POSTCARD_BACKGROUND,
+  DEFAULT_POSTCARD_FONT,
+} from "@/lib/postcard-styles";
+import type {
+  PostcardBackgroundId,
+  PostcardFontId,
+} from "@/lib/postcard-styles";
+import { useFavorites } from "@/hooks/useFavorites";
+import { FavoritePostcard } from "@/lib/favorites";
+import { CalendarDays, Heart, Mail, RefreshCw } from "lucide-react";
 
 export default function Home() {
-  const [region, setRegion] = useState<AppRegion>('both');
+  const [region, setRegion] = useState<AppRegion>("both");
   const [holiday, setHoliday] = useState<Holiday | null>(null);
-  const [greeting, setGreeting] = useState<string>('');
+  const [greeting, setGreeting] = useState<string>("");
   const [decorElements, setDecorElements] = useState<string[]>([]);
+  const [backgroundStyle, setBackgroundStyle] = useState<PostcardBackgroundId>(
+    DEFAULT_POSTCARD_BACKGROUND
+  );
+  const [fontStyle, setFontStyle] = useState<PostcardFontId>(
+    DEFAULT_POSTCARD_FONT
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMessageEditor, setShowMessageEditor] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -91,12 +106,12 @@ export default function Home() {
   const handleLoadFavorite = (favorite: FavoritePostcard) => {
     setRegion(favorite.region);
     const favoriteHoliday = getHolidayById(favorite.holidayId);
-    
+
     // Find the holiday that matches the favorite
     if (favoriteHoliday) {
       setHoliday(favoriteHoliday);
     }
-    
+
     setGreeting(favorite.greeting);
     setDecorElements(favorite.decorElements);
     setShowFavorites(false);
@@ -105,7 +120,7 @@ export default function Home() {
   // Handle next holiday
   const handleNextHoliday = () => {
     if (!holiday) return;
-    
+
     const nextHol = getNextHoliday(holiday, region);
     setHoliday(nextHol);
     setGreeting(getRandomGreeting(nextHol));
@@ -115,7 +130,7 @@ export default function Home() {
   // Handle previous holiday
   const handlePreviousHoliday = () => {
     if (!holiday) return;
-    
+
     const prevHol = getPreviousHoliday(holiday, region);
     setHoliday(prevHol);
     setGreeting(getRandomGreeting(prevHol));
@@ -145,7 +160,8 @@ export default function Home() {
             <h1 className="studio-title">Luckee Seasonal Greetings</h1>
           </div>
           <p className="studio-copy max-w-xl md:justify-self-end md:text-right">
-            Compose a polished holiday postcard for clients, partners, and teams across US, UK, and Canadian calendars.
+            Compose a polished holiday postcard for clients, partners, and teams
+            across US, UK, and Canadian calendars.
           </p>
         </div>
 
@@ -156,7 +172,7 @@ export default function Home() {
             className="lg:col-span-2 transition-all duration-300 ease-out"
             style={{
               opacity: isGenerating ? 0.7 : 1,
-              transform: isGenerating ? 'scale(0.98)' : 'scale(1)',
+              transform: isGenerating ? "scale(0.98)" : "scale(1)",
             }}
           >
             <div id="postcard-container" className="studio-stage">
@@ -164,6 +180,8 @@ export default function Home() {
                 holiday={holiday}
                 greeting={greeting}
                 decorElements={decorElements}
+                backgroundStyle={backgroundStyle}
+                fontStyle={fontStyle}
               />
             </div>
           </div>
@@ -172,9 +190,7 @@ export default function Home() {
           <div className="space-y-6">
             {/* Region selector */}
             <div className="studio-panel p-5">
-              <label className="studio-field-label mb-3 block">
-                Region
-              </label>
+              <label className="studio-field-label mb-3 block">Region</label>
               <Select value={region} onValueChange={handleRegionChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -198,20 +214,30 @@ export default function Home() {
 
             {/* Holiday info */}
             <div className="studio-panel p-5">
-              <h3 className="studio-field-label mb-2">
-                Current holiday
-              </h3>
+              <h3 className="studio-field-label mb-2">Current holiday</h3>
               <p className="mb-4 font-semibold text-[#142f34]">
                 {holiday.name}
               </p>
               <div className="flex flex-wrap gap-2">
                 {holiday.decorElements.slice(0, 3).map((element, idx) => (
                   <span key={idx} className="studio-chip">
-                    {element.replace(/-/g, ' ')}
+                    {element.replace(/-/g, " ")}
                   </span>
                 ))}
               </div>
             </div>
+
+            <PostcardStyleControls
+              holiday={holiday}
+              background={backgroundStyle}
+              font={fontStyle}
+              onBackgroundChange={setBackgroundStyle}
+              onFontChange={setFontStyle}
+              onReset={() => {
+                setBackgroundStyle(DEFAULT_POSTCARD_BACKGROUND);
+                setFontStyle(DEFAULT_POSTCARD_FONT);
+              }}
+            />
 
             {/* Generate button */}
             <Button
@@ -219,8 +245,8 @@ export default function Home() {
               disabled={isGenerating}
               className="w-full py-6 text-base font-bold transition-all duration-200 hover:shadow-lg active:scale-95"
               style={{
-                backgroundColor: '#1d4f4a',
-                color: '#fbfaf6',
+                backgroundColor: "#1d4f4a",
+                color: "#fbfaf6",
               }}
             >
               {isGenerating ? (
@@ -243,7 +269,15 @@ export default function Home() {
               greeting={greeting}
               decorElements={decorElements}
               region={region}
-              onSave={() => addFavorite(holiday.id, holiday.name, greeting, decorElements, region)}
+              onSave={() =>
+                addFavorite(
+                  holiday.id,
+                  holiday.name,
+                  greeting,
+                  decorElements,
+                  region
+                )
+              }
             />
 
             {/* Export and sharing toolbar */}
@@ -258,7 +292,7 @@ export default function Home() {
             <div className="flex gap-2">
               <Button
                 onClick={() => setShowCalendar(!showCalendar)}
-                variant={showCalendar ? 'default' : 'outline'}
+                variant={showCalendar ? "default" : "outline"}
                 className="flex-1"
               >
                 <CalendarDays className="h-4 w-4" />
@@ -266,7 +300,7 @@ export default function Home() {
               </Button>
               <Button
                 onClick={() => setShowEmailTool(!showEmailTool)}
-                variant={showEmailTool ? 'default' : 'outline'}
+                variant={showEmailTool ? "default" : "outline"}
                 className="flex-1"
               >
                 <Mail className="h-4 w-4" />
@@ -285,9 +319,11 @@ export default function Home() {
               className="w-full mb-6"
             >
               <Heart className="w-4 h-4 mr-2 fill-orange-500 text-orange-500" />
-              {showFavorites ? 'Hide Favorites' : `View Favorites (${favorites.length})`}
+              {showFavorites
+                ? "Hide Favorites"
+                : `View Favorites (${favorites.length})`}
             </Button>
-            
+
             {/* Favorites Panel - displayed below button */}
             {showFavorites && (
               <FavoritesPanel
@@ -304,7 +340,7 @@ export default function Home() {
         {showCalendar && (
           <div className="mt-12">
             <HolidayCalendar
-              onHolidaySelect={(selectedHoliday) => {
+              onHolidaySelect={selectedHoliday => {
                 setHoliday(selectedHoliday);
                 setGreeting(getRandomGreeting(selectedHoliday));
                 setDecorElements(getRandomDecorElements(selectedHoliday, 3));
@@ -319,17 +355,15 @@ export default function Home() {
         {/* Email Campaign Tool */}
         {showEmailTool && (
           <div className="mt-12">
-            <EmailCampaignTool
-              holiday={holiday}
-              greeting={greeting}
-            />
+            <EmailCampaignTool holiday={holiday} greeting={greeting} />
           </div>
         )}
 
         {/* Footer info */}
         <div className="mt-16 text-center">
           <p className="studio-copy max-w-2xl mx-auto text-sm">
-            Seasonal greetings shaped for the moments your clients and teams actually observe.
+            Seasonal greetings shaped for the moments your clients and teams
+            actually observe.
           </p>
         </div>
       </div>

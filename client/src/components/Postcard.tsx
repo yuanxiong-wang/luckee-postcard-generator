@@ -1,6 +1,6 @@
 /**
  * Postcard Component
- * 
+ *
  * Renders a seasonal postcard with:
  * - Holiday-specific greeting
  * - Consistent "From our team at, Luckee" signature
@@ -8,35 +8,47 @@
  * - Beautiful seasonal background images
  */
 
-import { Holiday } from '@/lib/holidays';
-import { getBackgroundForHoliday } from '@/lib/holiday-backgrounds';
+import { Holiday } from "@/lib/holidays";
+import { getBackgroundForHoliday } from "@/lib/holiday-backgrounds";
+import {
+  getPostcardBackgroundPresentation,
+  getPostcardFont,
+} from "@/lib/postcard-styles";
+import type {
+  PostcardBackgroundId,
+  PostcardFontId,
+} from "@/lib/postcard-styles";
 
 interface PostcardProps {
   holiday: Holiday;
   greeting: string;
   decorElements: string[];
+  backgroundStyle: PostcardBackgroundId;
+  fontStyle: PostcardFontId;
 }
 
-export function Postcard({ holiday, greeting, decorElements }: PostcardProps) {
+export function Postcard({
+  holiday,
+  greeting,
+  decorElements,
+  backgroundStyle,
+  fontStyle,
+}: PostcardProps) {
   const bgImage = getBackgroundForHoliday(holiday.id);
+  const background = getPostcardBackgroundPresentation(
+    backgroundStyle,
+    holiday,
+    bgImage
+  );
+  const font = getPostcardFont(fontStyle);
 
   return (
     <div
       className="studio-postcard relative w-full aspect-[8.5/5.5] overflow-hidden"
-      style={{
-        backgroundColor: holiday.colors.background,
-        backgroundImage: `url('${bgImage}')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
+      style={background.surface}
     >
       {/* Overlay for better text readability */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(135deg, ${holiday.colors.background}f2 0%, ${holiday.colors.background}b8 52%, ${holiday.colors.background}86 100%)`,
-        }}
-      />
+      <div className="absolute inset-0" style={background.overlay} />
 
       {/* Main content area with proper z-index */}
       <div className="relative z-10 h-full flex flex-col justify-between p-6 md:p-12">
@@ -45,8 +57,11 @@ export function Postcard({ holiday, greeting, decorElements }: PostcardProps) {
           <h1
             className="postcard-greeting max-w-2xl drop-shadow-lg"
             style={{
-              color: holiday.colors.text,
-              textShadow: '3px 3px 6px rgba(0,0,0,0.25)',
+              color: background.textColor,
+              fontFamily: font.family,
+              fontStyle: font.style,
+              fontWeight: font.weight,
+              textShadow: "3px 3px 6px rgba(0,0,0,0.25)",
             }}
           >
             {greeting}
@@ -58,8 +73,8 @@ export function Postcard({ holiday, greeting, decorElements }: PostcardProps) {
           <span
             className="postcard-note drop-shadow-md"
             style={{
-              color: holiday.colors.textLight,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
+              color: background.secondaryTextColor,
+              textShadow: "2px 2px 4px rgba(0,0,0,0.2)",
             }}
           >
             From our team at,
@@ -67,8 +82,9 @@ export function Postcard({ holiday, greeting, decorElements }: PostcardProps) {
           <span
             className="postcard-signature drop-shadow-lg"
             style={{
-              color: holiday.colors.text,
-              textShadow: '3px 3px 6px rgba(0,0,0,0.25)',
+              color: background.textColor,
+              fontFamily: font.family,
+              textShadow: "3px 3px 6px rgba(0,0,0,0.25)",
             }}
           >
             Luckee
@@ -80,8 +96,8 @@ export function Postcard({ holiday, greeting, decorElements }: PostcardProps) {
       <div
         className="absolute bottom-20 md:bottom-24 left-0 right-0 h-px z-20"
         style={{
-          background: `linear-gradient(to right, ${holiday.colors.accent}00, ${holiday.colors.accent}, ${holiday.colors.accent}00)`,
-          boxShadow: `0 0 10px ${holiday.colors.accent}70`,
+          background: `linear-gradient(to right, ${background.dividerColor}00, ${background.dividerColor}, ${background.dividerColor}00)`,
+          boxShadow: `0 0 10px ${background.dividerColor}70`,
         }}
       />
     </div>

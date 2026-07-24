@@ -2,9 +2,6 @@
  * Postcard Export Utilities - Using html-to-image for better CSS support
  */
 
-import { toPng, toJpeg } from 'html-to-image';
-import { jsPDF } from 'jspdf';
-
 /**
  * PNG download with full content capture
  */
@@ -19,6 +16,7 @@ export async function downloadPostcardAsPNG(
     }
 
     // Use html-to-image for better CSS support (including oklch colors)
+    const { toPng } = await import('html-to-image');
     const dataUrl = await toPng(element, {
       quality: 1.0,
       pixelRatio: 2, // High resolution output
@@ -53,6 +51,10 @@ export async function downloadPostcardAsPDF(
     }
 
     // Use html-to-image for better CSS support (including oklch colors)
+    const [{ toPng }, { jsPDF }] = await Promise.all([
+      import('html-to-image'),
+      import('jspdf'),
+    ]);
     const dataUrl = await toPng(element, {
       quality: 1.0,
       pixelRatio: 2, // High resolution output
@@ -104,6 +106,7 @@ export async function downloadPostcardAsJPEG(
     }
 
     // Use html-to-image for better CSS support
+    const { toJpeg } = await import('html-to-image');
     const dataUrl = await toJpeg(element, {
       quality: 0.95,
       pixelRatio: 2, // High resolution output

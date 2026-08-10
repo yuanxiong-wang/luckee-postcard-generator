@@ -1,48 +1,53 @@
 /**
  * PostcardPreviewModal Component
- * 
+ *
  * Shows a preview of the postcard before downloading
  */
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { X, Download, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { X, Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   downloadPostcardAsPNG,
   downloadPostcardAsPDF,
-} from '@/lib/postcard-export';
-import { Holiday } from '@/lib/holidays';
+} from "@/lib/postcard-export";
+import { Holiday } from "@/lib/holidays";
 
 interface PostcardPreviewModalProps {
   holiday: Holiday;
   greeting: string;
-  decorElements: string[];
+  getExportElement: () => HTMLElement | null;
   onClose: () => void;
 }
 
 export function PostcardPreviewModal({
   holiday,
   greeting,
-  decorElements,
+  getExportElement,
   onClose,
 }: PostcardPreviewModalProps) {
   const [isExporting, setIsExporting] = useState(false);
-  const [exportFormat, setExportFormat] = useState<'png' | 'pdf' | null>(null);
+  const [exportFormat, setExportFormat] = useState<"png" | "pdf" | null>(null);
 
   const handleDownloadPNG = async () => {
     setIsExporting(true);
-    setExportFormat('png');
+    setExportFormat("png");
     try {
+      const exportElement = getExportElement();
+      if (!exportElement) throw new Error("Postcard is not ready to export");
       await downloadPostcardAsPNG(
-        'postcard-container',
+        exportElement,
         `luckee-${holiday.id}-postcard.png`
       );
-      toast.success('Postcard downloaded as PNG!');
+      toast.success("Postcard downloaded as PNG!");
       onClose();
     } catch (error) {
-      toast.error('Failed to download PNG. Please try again.');
-      console.error('PNG export error:', error instanceof Error ? error.message : String(error));
+      toast.error("Failed to download PNG. Please try again.");
+      console.error(
+        "PNG export error:",
+        error instanceof Error ? error.message : String(error)
+      );
     } finally {
       setIsExporting(false);
       setExportFormat(null);
@@ -51,17 +56,22 @@ export function PostcardPreviewModal({
 
   const handleDownloadPDF = async () => {
     setIsExporting(true);
-    setExportFormat('pdf');
+    setExportFormat("pdf");
     try {
+      const exportElement = getExportElement();
+      if (!exportElement) throw new Error("Postcard is not ready to export");
       await downloadPostcardAsPDF(
-        'postcard-container',
+        exportElement,
         `luckee-${holiday.id}-postcard.pdf`
       );
-      toast.success('Postcard downloaded as PDF!');
+      toast.success("Postcard downloaded as PDF!");
       onClose();
     } catch (error) {
-      toast.error('Failed to download PDF. Please try again.');
-      console.error('PDF export error:', error instanceof Error ? error.message : String(error));
+      toast.error("Failed to download PDF. Please try again.");
+      console.error(
+        "PDF export error:",
+        error instanceof Error ? error.message : String(error)
+      );
     } finally {
       setIsExporting(false);
       setExportFormat(null);
@@ -75,7 +85,7 @@ export function PostcardPreviewModal({
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2
             className="text-2xl font-semibold text-slate-800"
-            style={{ fontFamily: 'Georgia, serif' }}
+            style={{ fontFamily: "Georgia, serif" }}
           >
             Preview Your Postcard
           </h2>
@@ -95,7 +105,7 @@ export function PostcardPreviewModal({
               <p className="text-xs text-slate-500 mb-1">Holiday</p>
               <p
                 className="text-lg font-semibold text-slate-800"
-                style={{ fontFamily: 'Georgia, serif' }}
+                style={{ fontFamily: "Georgia, serif" }}
               >
                 {holiday.name}
               </p>
@@ -113,43 +123,24 @@ export function PostcardPreviewModal({
             <p className="text-xs text-slate-500 mb-2">Message</p>
             <p
               className="text-base text-slate-700 italic"
-              style={{ fontFamily: 'Playfair Display, serif' }}
+              style={{ fontFamily: "Playfair Display, serif" }}
             >
               "{greeting}"
             </p>
           </div>
 
-          {/* Decorative Elements */}
-          <div className="bg-slate-50 rounded-lg p-4">
-            <p className="text-xs text-slate-500 mb-3">Decorative Elements</p>
-            <div className="flex flex-wrap gap-2">
-              {decorElements.map((element, idx) => (
-                <span
-                  key={idx}
-                  className="inline-block px-3 py-1 bg-white border border-slate-200 text-slate-700 rounded-full text-xs"
-                  style={{ fontFamily: 'Georgia, serif' }}
-                >
-                  {element.replace(/-/g, ' ')}
-                </span>
-              ))}
-            </div>
-          </div>
-
           {/* Download Quality Info */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-900">
-              <strong>High-Quality Download:</strong> Your postcard will be exported at 2x resolution for crisp, professional printing.
+              <strong>High-Quality Download:</strong> Your postcard will be
+              exported at 2x resolution for crisp, professional printing.
             </p>
           </div>
         </div>
 
         {/* Footer Actions */}
         <div className="flex gap-3 p-6 border-t border-slate-200 bg-slate-50">
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className="flex-1"
-          >
+          <Button onClick={onClose} variant="outline" className="flex-1">
             Cancel
           </Button>
           <Button
@@ -158,10 +149,10 @@ export function PostcardPreviewModal({
             className="flex-1"
             style={{
               backgroundColor: holiday.colors.accent,
-              color: '#f5f1e8',
+              color: "#f5f1e8",
             }}
           >
-            {isExporting && exportFormat === 'png' ? (
+            {isExporting && exportFormat === "png" ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
               <Download className="w-4 h-4 mr-2" />
@@ -174,10 +165,10 @@ export function PostcardPreviewModal({
             className="flex-1"
             style={{
               backgroundColor: holiday.colors.accent,
-              color: '#f5f1e8',
+              color: "#f5f1e8",
             }}
           >
-            {isExporting && exportFormat === 'pdf' ? (
+            {isExporting && exportFormat === "pdf" ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
               <Download className="w-4 h-4 mr-2" />

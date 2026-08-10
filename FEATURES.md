@@ -72,7 +72,7 @@ Users can download their generated postcards in two formats: PNG (image) and PDF
 4. Filename includes the holiday name for easy organization
 
 **Technical Details:**
-- Uses `html2canvas` to convert the postcard DOM to an image
+- Uses `html-to-image` to rasterize the explicit postcard surface
 - Uses `jsPDF` to create PDF documents
 - Preserves all styling, fonts, and background images
 - CORS-enabled for reliable image rendering
@@ -167,7 +167,7 @@ Users can easily share their postcards on LinkedIn and Facebook with pre-filled 
 - Export and sharing functionality
 
 **Postcard.tsx**
-- Added ID for export targeting
+- Exposes the postcard surface as the export target
 - Improved text shadows for better export quality
 - Maintained fixed "From our team at, Luckee" signature
 
@@ -176,7 +176,7 @@ Users can easily share their postcards on LinkedIn and Facebook with pre-filled 
 ## Dependencies
 
 **New NPM Packages:**
-- `html2canvas@1.4.1` - DOM to canvas conversion
+- `html-to-image` - DOM to image conversion
 - `jspdf@4.2.1` - PDF generation
 
 **Existing Components:**

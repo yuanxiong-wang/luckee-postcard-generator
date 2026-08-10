@@ -96,11 +96,11 @@ client/
   src/
     components/
       Postcard.tsx              # Main postcard rendering component
-      PostcardDecorations.tsx   # SVG decorative elements
     pages/
       Home.tsx                  # Main application page
     lib/
-      holidays.ts              # Holiday data and logic
+      holidays.data.ts          # Holiday records
+      holidays.calendar.ts      # Date rules and calendar queries
       holiday-backgrounds.ts   # Background image mappings
     App.tsx                     # Application router and layout
     index.css                   # Global styles and design tokens
@@ -109,16 +109,16 @@ client/
 
 ## How to Use
 
-1. **Select Your Region:** Choose between US & UK holidays, US only, or UK only
+1. **Select Your Region:** Choose all supported holidays, or US, UK, or Canada only
 2. **View Current Holiday:** The postcard automatically displays the current or next upcoming holiday
 3. **Generate Variations:** Click "Generate New Postcard" to create different greeting variations
-4. **Save Your Postcard:** Take a screenshot to save your favorite postcard
+4. **Save Your Postcard:** Save the full composition, including its greeting and styles
 
 ## Customization
 
 ### Adding New Holidays
 
-Edit `client/src/lib/holidays.ts` to add new holidays:
+Edit `client/src/lib/holidays.data.ts` to add new holidays:
 
 ```typescript
 {
@@ -133,8 +133,7 @@ Edit `client/src/lib/holidays.ts` to add new holidays:
     text: '#color',
     textLight: '#color',
   },
-  decorElements: ['element1', 'element2'],
-  region: 'US' | 'UK' | 'both',
+  regions: ['US'], // [] means all supported regions
 }
 ```
 
@@ -147,10 +146,6 @@ Update the `colors` object in each holiday to change the seasonal palette. The s
 - `text`: Primary text color
 - `textLight`: Secondary text color
 
-### Adding New Decorative Elements
-
-Create new SVG elements in `PostcardDecorations.tsx` and add them to the `decorElements` array for any holiday.
-
 ## Browser Support
 
 - Chrome/Chromium (latest)
@@ -161,7 +156,6 @@ Create new SVG elements in `PostcardDecorations.tsx` and add them to the `decorE
 ## Performance
 
 - Lightweight React components with minimal re-renders
-- Optimized SVG decorations for fast rendering
 - Compressed background images for quick loading
 - Responsive design that works on all screen sizes
 

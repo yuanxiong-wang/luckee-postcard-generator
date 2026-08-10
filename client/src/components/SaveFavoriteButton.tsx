@@ -1,101 +1,46 @@
-/**
- * SaveFavoriteButton Component
- * 
- * Button to save/unsave a postcard as favorite
- */
-
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Heart } from 'lucide-react';
-import { saveFavorite, removeFavorite, isFavorited, getFavorites } from '@/lib/favorites';
-import type { AppRegion } from '@/lib/holidays';
-import { toast } from 'sonner';
+import { Heart } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface SaveFavoriteButtonProps {
-  holidayId: string;
-  holidayName: string;
-  greeting: string;
-  decorElements: string[];
-  region: AppRegion;
-  onSave?: () => void;
-  onRemove?: () => void;
+  isFavorite: boolean;
+  onSave: () => void;
+  onRemove: () => void;
 }
 
 export function SaveFavoriteButton({
-  holidayId,
-  holidayName,
-  greeting,
-  decorElements,
-  region,
+  isFavorite,
   onSave,
   onRemove,
 }: SaveFavoriteButtonProps) {
-  const [isFav, setIsFav] = useState(
-    isFavorited(holidayId, greeting, decorElements)
-  );
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Reset favorite state when postcard changes
-  useEffect(() => {
-    setIsFav(isFavorited(holidayId, greeting, decorElements));
-  }, [holidayId, greeting, decorElements]);
-
-  const handleToggleFavorite = async () => {
-    setIsLoading(true);
-
+  const handleToggleFavorite = () => {
     try {
-      if (isFav) {
-        // Remove from favorites - find the matching favorite by ID
-        const favorites = getFavorites();
-        const favoriteToRemove = favorites.find(
-          (fav) =>
-            fav.holidayId === holidayId &&
-            fav.greeting === greeting &&
-            JSON.stringify(fav.decorElements) === JSON.stringify(decorElements)
-        );
-        
-        if (favoriteToRemove) {
-          removeFavorite(favoriteToRemove.id);
-        }
-        
-        setIsFav(false);
-        toast.success('Removed from favorites');
-        onRemove?.();
+      if (isFavorite) {
+        onRemove();
+        toast.success("Removed from favorites");
       } else {
-        // Add to favorites
-        saveFavorite(holidayId, holidayName, greeting, decorElements, region);
-        setIsFav(true);
-        toast.success('Added to favorites!');
-        onSave?.();
+        onSave();
+        toast.success("Added to favorites!");
       }
     } catch (error) {
-      toast.error('Failed to update favorites');
-      console.error('Favorites toggle error:', error instanceof Error ? error.message : String(error));
-    } finally {
-      setIsLoading(false);
+      toast.error("Failed to update favorites");
+      console.error(
+        "Favorites toggle error:",
+        error instanceof Error ? error.message : String(error)
+      );
     }
   };
 
   return (
     <Button
       onClick={handleToggleFavorite}
-      disabled={isLoading}
       size="sm"
       className="w-full"
-      variant={isFav ? 'default' : 'outline'}
-      style={
-        isFav
-          ? {
-              backgroundColor: '#b58b43',
-              color: '#142f34',
-            }
-          : {}
-      }
+      variant={isFavorite ? "default" : "outline"}
+      style={isFavorite ? { backgroundColor: "#b58b43", color: "#142f34" } : {}}
     >
-      <Heart
-        className={`w-4 h-4 mr-2 ${isFav ? 'fill-current' : ''}`}
-      />
-      {isFav ? 'Saved' : 'Save to Favorites'}
+      <Heart className={`mr-2 h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+      {isFavorite ? "Saved" : "Save to Favorites"}
     </Button>
   );
 }

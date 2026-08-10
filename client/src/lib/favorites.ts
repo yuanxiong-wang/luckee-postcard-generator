@@ -1,159 +1,128 @@
-/**
- * Favorites Management Utility
- * 
- * Handles saving, loading, and managing favorite postcards using localStorage
- */
+import type { PostcardComposition } from "./postcard-composition";
+import { getHolidayById } from "./holidays";
+import {
+  DEFAULT_POSTCARD_BACKGROUND,
+  DEFAULT_POSTCARD_FONT,
+} from "./postcard-styles";
 
-import type { AppRegion } from './holidays';
-
-export interface FavoritePostcard {
+export interface FavoritePostcard extends PostcardComposition {
   id: string;
-  holidayId: string;
-  holidayName: string;
-  greeting: string;
-  decorElements: string[];
   timestamp: number;
-  region: AppRegion;
 }
 
-const STORAGE_KEY = 'luckee_favorites';
+const STORAGE_KEY = "luckee_favorites";
 const MAX_FAVORITES = 20;
 
-/**
- * Get all saved favorites from localStorage
- */
 export function getFavorites(): FavoritePostcard[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return [];
-    
-    const favorites = JSON.parse(stored) as FavoritePostcard[];
-    // Sort by most recent first
-    return favorites.sort((a, b) => b.timestamp - a.timestamp);
+
+    return (JSON.parse(stored) as unknown[])
+      .map(normalizeFavorite)
+      .filter((favorite): favorite is FavoritePostcard => Boolean(favorite))
+      .sort((a, b) => b.timestamp - a.timestamp);
   } catch (error) {
-    console.error('Error loading favorites:', error);
+    console.error("Error loading favorites:", error);
     return [];
   }
 }
 
-/**
- * Save a new favorite postcard
- */
-export function saveFavorite(
-  holidayId: string,
-  holidayName: string,
-  greeting: string,
-  decorElements: string[],
-  region: AppRegion
-): FavoritePostcard {
-  try {
-    const favorites = getFavorites();
-    
-    // Create new favorite with unique ID
-    const newFavorite: FavoritePostcard = {
-      id: `fav_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      holidayId,
-      holidayName,
-      greeting,
-      decorElements,
-      timestamp: Date.now(),
-      region,
-    };
+function normalizeFavorite(value: unknown): FavoritePostcard | null {
+  if (!value || typeof value !== "object") return null;
 
-    // Add to favorites and maintain max limit
-    const updated = [newFavorite, ...favorites].slice(0, MAX_FAVORITES);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    
-    return newFavorite;
-  } catch (error) {
-    console.error('Error saving favorite:', error);
-    throw error;
+  const favorite = value as Omit<Partial<FavoritePostcard>, "region"> & {
+    holidayId?: string;
+    region?: string;
+  };
+  const region = favorite.region === "both" ? "all" : favorite.region;
+  if (
+    region !== "all" &&
+    region !== "US" &&
+    region !== "UK" &&
+    region !== "CA"
+  ) {
+    return null;
   }
+  if (
+    favorite.id &&
+    favorite.holiday &&
+    favorite.greeting &&
+    favorite.backgroundStyle &&
+    favorite.fontStyle &&
+    favorite.timestamp
+  ) {
+    return { ...favorite, region } as FavoritePostcard;
+  }
+
+  const holiday = favorite.holidayId
+    ? getHolidayById(favorite.holidayId)
+    : undefined;
+  if (!favorite.id || !holiday || !favorite.greeting || !favorite.timestamp) {
+    return null;
+  }
+
+  return {
+    id: favorite.id,
+    timestamp: favorite.timestamp,
+    region,
+    holiday,
+    greeting: favorite.greeting,
+    backgroundStyle: DEFAULT_POSTCARD_BACKGROUND,
+    fontStyle: DEFAULT_POSTCARD_FONT,
+  };
 }
 
-/**
- * Remove a favorite by ID
- */
-export function removeFavorite(favoriteId: string): void {
-  try {
-    const favorites = getFavorites();
-    const updated = favorites.filter(fav => fav.id !== favoriteId);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch (error) {
-    console.error('Error removing favorite:', error);
-    throw error;
-  }
-}
-
-/**
- * Check if a postcard is already favorited
- */
-export function isFavorited(
-  holidayId: string,
-  greeting: string,
-  decorElements: string[]
+export function isSameComposition(
+  favorite: Pick<FavoritePostcard, keyof PostcardComposition>,
+  composition: PostcardComposition
 ): boolean {
-  const favorites = getFavorites();
-  return favorites.some(
-    fav =>
-      fav.holidayId === holidayId &&
-      fav.greeting === greeting &&
-      JSON.stringify(fav.decorElements) === JSON.stringify(decorElements)
+  return (
+    favorite.holiday.id === composition.holiday.id &&
+    favorite.greeting === composition.greeting &&
+    favorite.region === composition.region &&
+    favorite.backgroundStyle === composition.backgroundStyle &&
+    favorite.fontStyle === composition.fontStyle
   );
 }
 
-/**
- * Get favorite by ID
- */
-export function getFavoriteById(favoriteId: string): FavoritePostcard | null {
-  const favorites = getFavorites();
-  return favorites.find(fav => fav.id === favoriteId) || null;
-}
-
-/**
- * Clear all favorites
- */
-export function clearAllFavorites(): void {
+export function saveFavorite(
+  composition: PostcardComposition
+): FavoritePostcard {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    const favorites = getFavorites();
+    const existing = favorites.find(favorite =>
+      isSameComposition(favorite, composition)
+    );
+    if (existing) return existing;
+
+    const newFavorite: FavoritePostcard = {
+      id: `fav_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      ...composition,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([newFavorite, ...favorites].slice(0, MAX_FAVORITES))
+    );
+
+    return newFavorite;
   } catch (error) {
-    console.error('Error clearing favorites:', error);
+    console.error("Error saving favorite:", error);
     throw error;
   }
 }
 
-/**
- * Get count of saved favorites
- */
-export function getFavoritesCount(): number {
-  return getFavorites().length;
-}
-
-/**
- * Export favorites as JSON
- */
-export function exportFavoritesAsJSON(): string {
-  const favorites = getFavorites();
-  return JSON.stringify(favorites, null, 2);
-}
-
-/**
- * Import favorites from JSON
- */
-export function importFavoritesFromJSON(jsonString: string): void {
+export function removeFavorite(favoriteId: string): void {
   try {
-    const imported = JSON.parse(jsonString) as FavoritePostcard[];
-    
-    // Validate structure
-    if (!Array.isArray(imported)) {
-      throw new Error('Invalid favorites format');
-    }
-
-    const favorites = getFavorites();
-    const merged = [...imported, ...favorites].slice(0, MAX_FAVORITES);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(
+        getFavorites().filter(favorite => favorite.id !== favoriteId)
+      )
+    );
   } catch (error) {
-    console.error('Error importing favorites:', error);
+    console.error("Error removing favorite:", error);
     throw error;
   }
 }

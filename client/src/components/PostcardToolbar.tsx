@@ -1,32 +1,32 @@
 /**
  * PostcardToolbar Component
- * 
+ *
  * Provides export and sharing options for the postcard
  */
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Download, Share2, Edit2 } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Download, Share2, Edit2 } from "lucide-react";
 import {
-  generateLinkedInShareURL,
   generateFacebookShareURL,
-  openShareWindow,
+  generateLinkedInShareURL,
   generateShareText,
-} from '@/lib/postcard-export';
-import { Holiday } from '@/lib/holidays';
-import { PostcardPreviewModal } from './PostcardPreviewModal';
+  openShareWindow,
+} from "@/lib/share";
+import { Holiday } from "@/lib/holidays";
+import { PostcardPreviewModal } from "./PostcardPreviewModal";
 
 interface PostcardToolbarProps {
   holiday: Holiday;
   greeting: string;
-  decorElements: string[];
+  getExportElement: () => HTMLElement | null;
   onEditMessage: () => void;
 }
 
 export function PostcardToolbar({
   holiday,
   greeting,
-  decorElements,
+  getExportElement,
   onEditMessage,
 }: PostcardToolbarProps) {
   const [showPreview, setShowPreview] = useState(false);
@@ -34,16 +34,16 @@ export function PostcardToolbar({
   const handleShareLinkedIn = () => {
     const pageUrl = window.location.href;
     const title = `Luckee ${holiday.name} Postcard`;
-    const summary = generateShareText(holiday.name, greeting);
+    const summary = generateShareText(greeting);
     const shareUrl = generateLinkedInShareURL(pageUrl, title, summary);
-    openShareWindow(shareUrl, 'LinkedIn Share', 550, 680);
+    openShareWindow(shareUrl, "LinkedIn Share", 550, 680);
   };
 
   const handleShareFacebook = () => {
     const pageUrl = window.location.href;
-    const quote = generateShareText(holiday.name, greeting);
+    const quote = generateShareText(greeting);
     const shareUrl = generateFacebookShareURL(pageUrl, quote);
-    openShareWindow(shareUrl, 'Facebook Share', 600, 400);
+    openShareWindow(shareUrl, "Facebook Share", 600, 400);
   };
 
   return (
@@ -53,8 +53,8 @@ export function PostcardToolbar({
         onClick={() => setShowPreview(true)}
         className="w-full justify-center"
         style={{
-          backgroundColor: '#1d4f4a',
-          color: '#fbfaf6',
+          backgroundColor: "#1d4f4a",
+          color: "#fbfaf6",
         }}
       >
         <Download className="w-4 h-4 mr-2" />
@@ -76,7 +76,7 @@ export function PostcardToolbar({
         <PostcardPreviewModal
           holiday={holiday}
           greeting={greeting}
-          decorElements={decorElements}
+          getExportElement={getExportElement}
           onClose={() => setShowPreview(false)}
         />
       )}
@@ -90,8 +90,8 @@ export function PostcardToolbar({
             size="sm"
             className="flex-1 text-xs"
             style={{
-              backgroundColor: '#0A66C2',
-              color: 'white',
+              backgroundColor: "#0A66C2",
+              color: "white",
             }}
           >
             <Share2 className="w-4 h-4 mr-1" />
@@ -102,8 +102,8 @@ export function PostcardToolbar({
             size="sm"
             className="flex-1 text-xs"
             style={{
-              backgroundColor: '#1877F2',
-              color: 'white',
+              backgroundColor: "#1877F2",
+              color: "white",
             }}
           >
             <Share2 className="w-4 h-4 mr-1" />

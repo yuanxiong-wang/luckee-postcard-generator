@@ -39,10 +39,10 @@ export function PostcardStyleControls({
   return (
     <div className="studio-panel p-5">
       <div className="mb-5 flex items-center justify-between">
-        <h3 className="studio-field-label flex items-center gap-2">
+        <div className="studio-field-label flex items-center gap-2">
           <Palette className="h-4 w-4" />
           Art direction
-        </h3>
+        </div>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

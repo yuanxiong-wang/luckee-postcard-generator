@@ -83,7 +83,7 @@ export function PostcardToolbar({
 
       {/* Share Section */}
       <div className="studio-panel-tight p-4">
-        <h3 className="studio-field-label mb-3">Share</h3>
+        <p className="studio-field-label mb-3">Share</p>
         <div className="flex gap-2">
           <Button
             onClick={handleShareLinkedIn}

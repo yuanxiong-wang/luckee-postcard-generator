@@ -85,7 +85,7 @@ export default function Home() {
 
   return (
     <div className="studio-shell py-8 md:py-14">
-      <div className="container mx-auto max-w-6xl px-4">
+      <main className="container mx-auto max-w-6xl px-4">
         <div className="mb-10 grid gap-5 md:grid-cols-[1.15fr_0.85fr] md:items-end">
           <div>
             <p className="studio-kicker mb-3">Seasonal correspondence desk</p>
@@ -144,7 +144,7 @@ export default function Home() {
             />
 
             <div className="studio-panel p-5">
-              <h3 className="studio-field-label mb-2">Current holiday</h3>
+              <p className="studio-field-label mb-2">Current holiday</p>
               <p className="font-semibold text-[#142f34]">
                 {composition.holiday.name}
               </p>
@@ -246,7 +246,7 @@ export default function Home() {
             actually observe.
           </p>
         </div>
-      </div>
+      </main>
 
       {showMessageEditor && (
         <MessageEditor

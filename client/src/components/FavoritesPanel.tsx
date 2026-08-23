@@ -76,6 +76,7 @@ export function FavoritesPanel({
         {onClose && (
           <button
             onClick={onClose}
+            aria-label="Close favorites"
             className="text-slate-500 hover:text-slate-700 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -149,6 +150,7 @@ export function FavoritesPanel({
               <div className="flex gap-1">
                 <button
                   onClick={() => handleSelectFavorite(favorite)}
+                  aria-label={`Load ${favorite.greeting}`}
                   className="p-2 text-slate-500 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors"
                   title="Load this postcard"
                 >
@@ -156,6 +158,7 @@ export function FavoritesPanel({
                 </button>
                 <button
                   onClick={() => handleRemoveFavorite(favorite.id)}
+                  aria-label={`Remove ${favorite.greeting} from favorites`}
                   className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                   title="Remove from favorites"
                 >

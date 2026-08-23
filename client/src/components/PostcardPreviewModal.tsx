@@ -91,6 +91,7 @@ export function PostcardPreviewModal({
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close postcard preview"
             className="text-slate-400 hover:text-slate-600 transition-colors"
           >
             <X className="w-6 h-6" />

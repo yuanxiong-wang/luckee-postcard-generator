@@ -8,7 +8,8 @@ export type DateRule =
   | { kind: "nth-weekday"; month: number; weekday: number; nth: number }
   | { kind: "last-weekday"; month: number; weekday: number }
   | { kind: "monday-on-or-before"; month: number; day: number }
-  | { kind: "easter" };
+  | { kind: "easter" }
+  | { kind: "easter-offset"; days: number };
 
 export interface HolidayPalette {
   background: string;
@@ -152,14 +153,20 @@ const navyGreen: HolidayPalette = {
   textLight: "#d4a574",
 };
 
+const navyGold: HolidayPalette = {
+  background: "#1a3a52",
+  accent: "#f39c12",
+  accentLight: "#fce4d6",
+  text: "#f5f1e8",
+  textLight: "#d4a574",
+};
+
 const firstMondaySeptember: DateRule = {
   kind: "nth-weekday",
   month: 9,
   weekday: 1,
   nth: 1,
 };
-
-const laborArtwork = artwork("thanksgiving");
 
 const laborGreetings = [
   "Cheers to Hard Work",
@@ -200,7 +207,7 @@ export const holidays = [
     ],
     colors: creamNavy,
     regions: ["US"],
-    artwork: artwork("new-year"),
+    artwork: artwork("mlk-day"),
   },
   {
     id: "valentines",
@@ -232,7 +239,7 @@ export const holidays = [
     ],
     colors: creamSage,
     regions: ["CA"],
-    artwork: artwork("valentines"),
+    artwork: artwork("family-day"),
   },
   {
     id: "presidents-day",
@@ -248,7 +255,7 @@ export const holidays = [
     ],
     colors: navyRed,
     regions: ["US"],
-    artwork: artwork("independence-day"),
+    artwork: artwork("presidents-day"),
   },
   {
     id: "st-patricks",
@@ -283,6 +290,54 @@ export const holidays = [
     artwork: artwork("easter"),
   },
   {
+    id: "good-friday",
+    name: "Good Friday",
+    date: { kind: "easter-offset", days: -2 },
+    greetings: [
+      "Peace This Good Friday",
+      "A Quiet Spring Day",
+      "Wishing You Rest",
+      "Gentle Spring Wishes",
+      "A Day of Reflection",
+      "Warmth This Season",
+    ],
+    colors: creamNavy,
+    regions: ["UK", "CA"],
+    artwork: artwork("good-friday"),
+  },
+  {
+    id: "easter-monday",
+    name: "Happy Easter Monday",
+    date: { kind: "easter-offset", days: 1 },
+    greetings: [
+      "Happy Easter Monday",
+      "Enjoy the Bank Holiday",
+      "Spring Continues",
+      "A Bright Bank Holiday",
+      "Cheers to the Long Weekend",
+      "Easter Monday Wishes",
+    ],
+    colors: creamGold,
+    regions: ["UK"],
+    artwork: artwork("easter-monday"),
+  },
+  {
+    id: "early-may-bank-holiday",
+    name: "Happy Early May Bank Holiday",
+    date: { kind: "nth-weekday", month: 5, weekday: 1, nth: 1 },
+    greetings: [
+      "Happy Early May Bank Holiday",
+      "Enjoy the Long Weekend",
+      "May Blossom Wishes",
+      "A Bright Bank Holiday",
+      "Spring Bank Holiday Cheer",
+      "Time to Pause and Enjoy",
+    ],
+    colors: creamSage,
+    regions: ["UK"],
+    artwork: artwork("early-may-bank-holiday"),
+  },
+  {
     id: "victoria-day",
     name: "Happy Victoria Day",
     date: { kind: "monday-on-or-before", month: 5, day: 24 },
@@ -296,7 +351,7 @@ export const holidays = [
     ],
     colors: creamCrimson,
     regions: ["CA"],
-    artwork: artwork("summer-solstice"),
+    artwork: artwork("victoria-day"),
   },
   {
     id: "memorial-day",
@@ -312,7 +367,23 @@ export const holidays = [
     ],
     colors: navyRed,
     regions: ["US"],
-    artwork: artwork("independence-day"),
+    artwork: artwork("memorial-day"),
+  },
+  {
+    id: "spring-bank-holiday",
+    name: "Happy Spring Bank Holiday",
+    date: { kind: "last-weekday", month: 5, weekday: 1 },
+    greetings: [
+      "Happy Spring Bank Holiday",
+      "Enjoy the Long Weekend",
+      "Late Spring Wishes",
+      "A Welcome Break",
+      "Sunshine and Rest",
+      "Bank Holiday Cheer",
+    ],
+    colors: creamSage,
+    regions: ["UK"],
+    artwork: artwork("spring-bank-holiday"),
   },
   {
     id: "juneteenth",
@@ -328,7 +399,7 @@ export const holidays = [
     ],
     colors: creamCrimsonWarm,
     regions: ["US"],
-    artwork: artwork("summer-solstice"),
+    artwork: artwork("juneteenth"),
   },
   {
     id: "summer-solstice",
@@ -360,7 +431,7 @@ export const holidays = [
     ],
     colors: creamMaple,
     regions: ["CA"],
-    artwork: artwork("independence-day"),
+    artwork: artwork("canada-day"),
   },
   {
     id: "independence-day",
@@ -379,13 +450,29 @@ export const holidays = [
     artwork: artwork("independence-day"),
   },
   {
+    id: "summer-bank-holiday",
+    name: "Happy Summer Bank Holiday",
+    date: { kind: "last-weekday", month: 8, weekday: 1 },
+    greetings: [
+      "Happy Summer Bank Holiday",
+      "Enjoy the Seaside Weekend",
+      "Late Summer Wishes",
+      "A Well-Earned Break",
+      "Sunshine and Salt Air",
+      "Bank Holiday Cheer",
+    ],
+    colors: solstice,
+    regions: ["UK"],
+    artwork: artwork("summer-bank-holiday"),
+  },
+  {
     id: "labor-day",
     name: "Happy Labor Day",
     date: firstMondaySeptember,
     greetings: ["Happy Labor Day", ...laborGreetings],
     colors: harvest,
     regions: ["US"],
-    artwork: laborArtwork,
+    artwork: artwork("labor-day"),
   },
   {
     id: "labour-day",
@@ -394,7 +481,7 @@ export const holidays = [
     greetings: ["Happy Labour Day", ...laborGreetings],
     colors: harvest,
     regions: ["CA"],
-    artwork: laborArtwork,
+    artwork: artwork("labour-day"),
   },
   {
     id: "truth-and-reconciliation-day",
@@ -410,7 +497,7 @@ export const holidays = [
     ],
     colors: orangeHarvest,
     regions: ["CA"],
-    artwork: artwork("summer-solstice"),
+    artwork: artwork("truth-and-reconciliation-day"),
   },
   {
     id: "canadian-thanksgiving",
@@ -426,7 +513,7 @@ export const holidays = [
     ],
     colors: thanksgiving,
     regions: ["CA"],
-    artwork: artwork("thanksgiving"),
+    artwork: artwork("canadian-thanksgiving"),
   },
   {
     id: "halloween",
@@ -445,6 +532,38 @@ export const holidays = [
     artwork: artwork("halloween"),
   },
   {
+    id: "guy-fawkes",
+    name: "Happy Bonfire Night",
+    date: { kind: "fixed", month: 11, day: 5 },
+    greetings: [
+      "Happy Bonfire Night",
+      "Sparks and Warmth",
+      "Guy Fawkes Night",
+      "A Bright November Evening",
+      "Bonfire Night Cheer",
+      "Remember, Remember",
+    ],
+    colors: navyGold,
+    regions: ["UK"],
+    artwork: artwork("guy-fawkes"),
+  },
+  {
+    id: "remembrance-sunday",
+    name: "Remembrance Sunday",
+    date: { kind: "nth-weekday", month: 11, weekday: 0, nth: 2 },
+    greetings: [
+      "Lest We Forget",
+      "With Respect This Remembrance Sunday",
+      "In Quiet Gratitude",
+      "Remembering with Care",
+      "Honoring Their Service",
+      "We Will Remember Them",
+    ],
+    colors: creamCrimson,
+    regions: ["UK"],
+    artwork: artwork("remembrance-sunday"),
+  },
+  {
     id: "veterans-day",
     name: "Happy Veterans Day",
     date: { kind: "fixed", month: 11, day: 11 },
@@ -458,7 +577,7 @@ export const holidays = [
     ],
     colors: navyRed,
     regions: ["US"],
-    artwork: artwork("independence-day"),
+    artwork: artwork("veterans-day"),
   },
   {
     id: "remembrance-day",
@@ -474,7 +593,7 @@ export const holidays = [
     ],
     colors: creamCrimson,
     regions: ["CA"],
-    artwork: artwork("thanksgiving"),
+    artwork: artwork("remembrance-day"),
   },
   {
     id: "thanksgiving",

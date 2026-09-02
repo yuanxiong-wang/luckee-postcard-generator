@@ -1,5 +1,12 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFavorites } from "./useFavorites";
+import {
+  compositionFromQuery,
+  parseCompositionSearch,
+  resolveInitialRegion,
+  writeCompositionUrl,
+} from "@/lib/composition-url";
+import { writeStoredRegion } from "@/lib/detect-region";
 import {
   getCurrentOrNextHoliday,
   getHolidayById,
@@ -38,15 +45,34 @@ function createComposition(
   };
 }
 
+function readWindowQuery() {
+  if (typeof window === "undefined") return {};
+  return parseCompositionSearch(window.location.search);
+}
+
 export function usePostcardStudio() {
   const [composition, setComposition] = useState<PostcardComposition>(() => {
-    const region: AppRegion = "all";
-    return createComposition(getCurrentOrNextHoliday(region), region);
+    const query = readWindowQuery();
+    return compositionFromQuery(query, resolveInitialRegion(query));
   });
   const [panel, setPanel] = useState<StudioPanel>("none");
   const { favorites, addFavorite, getFavorite, removeFavorite } =
     useFavorites();
   const activeFavorite = getFavorite(composition);
+
+  useEffect(() => {
+    writeStoredRegion(composition.region);
+    writeCompositionUrl(composition);
+  }, [composition]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const query = readWindowQuery();
+      setComposition(compositionFromQuery(query, composition.region));
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [composition.region]);
 
   const closePanel = useCallback(() => setPanel("none"), []);
 
@@ -61,6 +87,7 @@ export function usePostcardStudio() {
   }, []);
 
   const setRegion = useCallback((region: AppRegion) => {
+    writeStoredRegion(region);
     setComposition(current =>
       createComposition(getCurrentOrNextHoliday(region), region, current)
     );
@@ -100,7 +127,7 @@ export function usePostcardStudio() {
   const refreshGreeting = useCallback(() => {
     setComposition(current => ({
       ...current,
-      greeting: getRandomGreeting(current.holiday),
+      greeting: getRandomGreeting(current.holiday, current.greeting),
     }));
   }, []);
 
@@ -108,6 +135,7 @@ export function usePostcardStudio() {
     const holiday = getHolidayById(favorite.holidayId);
     if (!holiday) return;
 
+    writeStoredRegion(favorite.region);
     setComposition({
       region: favorite.region,
       holiday,

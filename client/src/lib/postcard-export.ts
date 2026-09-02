@@ -26,6 +26,11 @@ function getImageDimensions(
   });
 }
 
+async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
+  const response = await fetch(dataUrl);
+  return response.blob();
+}
+
 export async function downloadPostcardAsPNG(
   element: HTMLElement,
   filename = "luckee-postcard.png"
@@ -38,6 +43,37 @@ export async function downloadPostcardAsPNG(
       `Failed to download PNG: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
+}
+
+export async function copyPostcardAsPNG(element: HTMLElement): Promise<void> {
+  const dataUrl = await rasterizePostcard(element);
+  const blob = await dataUrlToBlob(dataUrl);
+
+  if (!navigator.clipboard?.write) {
+    download(dataUrl, "luckee-postcard.png");
+    throw new Error("Clipboard images are not supported in this browser");
+  }
+
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({ [blob.type || "image/png"]: blob }),
+    ]);
+  } catch {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        "image/png": Promise.resolve(blob),
+      }),
+    ]);
+  }
+}
+
+export async function copyCompositionLink(): Promise<string> {
+  const href = window.location.href;
+  if (!navigator.clipboard?.writeText) {
+    throw new Error("Clipboard is not available");
+  }
+  await navigator.clipboard.writeText(href);
+  return href;
 }
 
 export async function downloadPostcardAsPDF(

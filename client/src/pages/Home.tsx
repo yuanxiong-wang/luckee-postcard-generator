@@ -116,6 +116,7 @@ export default function Home() {
             <PostcardToolbar
               onDownload={() => studio.togglePanel("download")}
               onEditMessage={() => studio.togglePanel("message")}
+              getExportElement={() => postcardRef.current}
             />
 
             <Button

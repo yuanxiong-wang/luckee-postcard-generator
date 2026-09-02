@@ -1,37 +1,53 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  generateFacebookShareURL,
-  generateLinkedInShareURL,
-  openShareWindow,
-} from "@/lib/share";
-import { Download, Edit2, Share2 } from "lucide-react";
+  copyCompositionLink,
+  copyPostcardAsPNG,
+} from "@/lib/postcard-export";
+import { Copy, Download, Edit2, Link2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface PostcardToolbarProps {
   onDownload: () => void;
   onEditMessage: () => void;
+  getExportElement: () => HTMLElement | null;
 }
 
 export function PostcardToolbar({
   onDownload,
   onEditMessage,
+  getExportElement,
 }: PostcardToolbarProps) {
-  const sharePage = (network: "linkedin" | "facebook") => {
-    const pageUrl = window.location.href;
-    if (network === "linkedin") {
-      openShareWindow(
-        generateLinkedInShareURL(pageUrl),
-        "LinkedIn Share",
-        550,
-        680
+  const [copying, setCopying] = useState<"image" | "link" | null>(null);
+
+  const copyImage = async () => {
+    setCopying("image");
+    try {
+      const element = getExportElement();
+      if (!element) throw new Error("Postcard is not ready to copy");
+      await copyPostcardAsPNG(element);
+      toast.success("Postcard image copied");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Could not copy the postcard image"
       );
-      return;
+    } finally {
+      setCopying(null);
     }
-    openShareWindow(
-      generateFacebookShareURL(pageUrl),
-      "Facebook Share",
-      600,
-      400
-    );
+  };
+
+  const copyLink = async () => {
+    setCopying("link");
+    try {
+      await copyCompositionLink();
+      toast.success("Shareable postcard link copied");
+    } catch {
+      toast.error("Could not copy the link");
+    } finally {
+      setCopying(null);
+    }
   };
 
   return (
@@ -55,25 +71,35 @@ export function PostcardToolbar({
       </Button>
 
       <div className="studio-panel-tight p-4">
-        <p className="studio-field-label mb-3">Share</p>
+        <p className="studio-field-label mb-3">Share this card</p>
         <div className="flex gap-2">
           <Button
-            onClick={() => sharePage("linkedin")}
+            onClick={copyImage}
+            disabled={Boolean(copying)}
             size="sm"
             className="flex-1 text-xs"
-            style={{ backgroundColor: "#0A66C2", color: "white" }}
+            variant="outline"
           >
-            <Share2 className="mr-1 h-4 w-4" />
-            LinkedIn
+            {copying === "image" ? (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            ) : (
+              <Copy className="mr-1 h-4 w-4" />
+            )}
+            Copy PNG
           </Button>
           <Button
-            onClick={() => sharePage("facebook")}
+            onClick={copyLink}
+            disabled={Boolean(copying)}
             size="sm"
             className="flex-1 text-xs"
-            style={{ backgroundColor: "#1877F2", color: "white" }}
+            variant="outline"
           >
-            <Share2 className="mr-1 h-4 w-4" />
-            Facebook
+            {copying === "link" ? (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            ) : (
+              <Link2 className="mr-1 h-4 w-4" />
+            )}
+            Copy link
           </Button>
         </div>
       </div>

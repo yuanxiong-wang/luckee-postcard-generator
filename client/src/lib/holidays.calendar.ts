@@ -13,10 +13,12 @@ export function getCurrentOrNextHoliday(region: AppRegion = "all"): Holiday {
   );
 }
 
-export function getRandomGreeting(holiday: Holiday): string {
-  return holiday.greetings[
-    Math.floor(Math.random() * holiday.greetings.length)
-  ];
+export function getRandomGreeting(holiday: Holiday, except?: string): string {
+  const options = except
+    ? holiday.greetings.filter(greeting => greeting !== except)
+    : holiday.greetings;
+  const pool = options.length > 0 ? options : holiday.greetings;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 export function getNextHoliday(
@@ -101,6 +103,14 @@ export function getHolidayDateForYear(holiday: Holiday, year: number): Date {
       );
     case "fixed":
       return new Date(year, holiday.date.month - 1, holiday.date.day);
+    case "easter-offset": {
+      const easter = getEasterDate(year);
+      return new Date(
+        easter.getFullYear(),
+        easter.getMonth(),
+        easter.getDate() + holiday.date.days
+      );
+    }
   }
 }
 

@@ -10,7 +10,9 @@
     "preview": "vite preview --host",
     "check": "tsc --noEmit",
     "check:holidays": "node --experimental-strip-types scripts/check-holidays.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
+    "prepush": "pnpm build && git diff --exit-code -- index.html assets _headers _redirects favicon.svg og-image.svg robots.txt sitemap.xml llms.txt holiday-backgrounds client/public/holiday-backgrounds"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

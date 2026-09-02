@@ -1,112 +1,78 @@
-/**
- * PostcardToolbar Component
- *
- * Provides export and sharing options for the postcard
- */
-
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, Edit2 } from "lucide-react";
 import {
   generateFacebookShareURL,
   generateLinkedInShareURL,
-  generateShareText,
   openShareWindow,
 } from "@/lib/share";
-import { Holiday } from "@/lib/holidays";
-import { PostcardPreviewModal } from "./PostcardPreviewModal";
+import { Download, Edit2, Share2 } from "lucide-react";
 
 interface PostcardToolbarProps {
-  holiday: Holiday;
-  greeting: string;
-  getExportElement: () => HTMLElement | null;
+  onDownload: () => void;
   onEditMessage: () => void;
 }
 
 export function PostcardToolbar({
-  holiday,
-  greeting,
-  getExportElement,
+  onDownload,
   onEditMessage,
 }: PostcardToolbarProps) {
-  const [showPreview, setShowPreview] = useState(false);
-
-  const handleShareLinkedIn = () => {
+  const sharePage = (network: "linkedin" | "facebook") => {
     const pageUrl = window.location.href;
-    const title = `Luckee ${holiday.name} Postcard`;
-    const summary = generateShareText(greeting);
-    const shareUrl = generateLinkedInShareURL(pageUrl, title, summary);
-    openShareWindow(shareUrl, "LinkedIn Share", 550, 680);
-  };
-
-  const handleShareFacebook = () => {
-    const pageUrl = window.location.href;
-    const quote = generateShareText(greeting);
-    const shareUrl = generateFacebookShareURL(pageUrl, quote);
-    openShareWindow(shareUrl, "Facebook Share", 600, 400);
+    if (network === "linkedin") {
+      openShareWindow(
+        generateLinkedInShareURL(pageUrl),
+        "LinkedIn Share",
+        550,
+        680
+      );
+      return;
+    }
+    openShareWindow(
+      generateFacebookShareURL(pageUrl),
+      "Facebook Share",
+      600,
+      400
+    );
   };
 
   return (
     <div className="space-y-3">
-      {/* Download Preview Button */}
       <Button
-        onClick={() => setShowPreview(true)}
+        onClick={onDownload}
         className="w-full justify-center"
-        style={{
-          backgroundColor: "#1d4f4a",
-          color: "#fbfaf6",
-        }}
+        style={{ backgroundColor: "#1d4f4a", color: "#fbfaf6" }}
       >
-        <Download className="w-4 h-4 mr-2" />
+        <Download className="mr-2 h-4 w-4" />
         Download Postcard
       </Button>
 
-      {/* Edit Message Section */}
       <Button
         onClick={onEditMessage}
         className="w-full justify-center"
         variant="outline"
       >
-        <Edit2 className="w-4 h-4 mr-2" />
+        <Edit2 className="mr-2 h-4 w-4" />
         Edit Message
       </Button>
 
-      {/* Preview Modal */}
-      {showPreview && (
-        <PostcardPreviewModal
-          holiday={holiday}
-          greeting={greeting}
-          getExportElement={getExportElement}
-          onClose={() => setShowPreview(false)}
-        />
-      )}
-
-      {/* Share Section */}
       <div className="studio-panel-tight p-4">
         <p className="studio-field-label mb-3">Share</p>
         <div className="flex gap-2">
           <Button
-            onClick={handleShareLinkedIn}
+            onClick={() => sharePage("linkedin")}
             size="sm"
             className="flex-1 text-xs"
-            style={{
-              backgroundColor: "#0A66C2",
-              color: "white",
-            }}
+            style={{ backgroundColor: "#0A66C2", color: "white" }}
           >
-            <Share2 className="w-4 h-4 mr-1" />
+            <Share2 className="mr-1 h-4 w-4" />
             LinkedIn
           </Button>
           <Button
-            onClick={handleShareFacebook}
+            onClick={() => sharePage("facebook")}
             size="sm"
             className="flex-1 text-xs"
-            style={{
-              backgroundColor: "#1877F2",
-              color: "white",
-            }}
+            style={{ backgroundColor: "#1877F2", color: "white" }}
           >
-            <Share2 className="w-4 h-4 mr-1" />
+            <Share2 className="mr-1 h-4 w-4" />
             Facebook
           </Button>
         </div>

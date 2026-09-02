@@ -47,6 +47,20 @@ export type PostcardFontId = (typeof postcardFontOptions)[number]["id"];
 export const DEFAULT_POSTCARD_BACKGROUND: PostcardBackgroundId = "artwork";
 export const DEFAULT_POSTCARD_FONT: PostcardFontId = "editorial";
 
+const fontsById = Object.fromEntries(
+  postcardFontOptions.map(font => [font.id, font])
+) as Record<PostcardFontId, (typeof postcardFontOptions)[number]>;
+
+export function isPostcardBackgroundId(
+  value: string
+): value is PostcardBackgroundId {
+  return postcardBackgroundOptions.some(option => option.id === value);
+}
+
+export function isPostcardFontId(value: string): value is PostcardFontId {
+  return postcardFontOptions.some(option => option.id === value);
+}
+
 export interface PostcardBackgroundPresentation {
   surface: CSSProperties;
   overlay: CSSProperties;
@@ -56,10 +70,7 @@ export interface PostcardBackgroundPresentation {
 }
 
 export function getPostcardFont(fontId: PostcardFontId) {
-  return (
-    postcardFontOptions.find(font => font.id === fontId) ??
-    postcardFontOptions[0]
-  );
+  return fontsById[fontId];
 }
 
 export function getPostcardBackgroundPresentation(

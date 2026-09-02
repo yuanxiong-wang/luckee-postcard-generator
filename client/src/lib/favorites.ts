@@ -1,13 +1,27 @@
 import type { PostcardComposition } from "./postcard-composition";
-import { getHolidayById } from "./holidays";
+import {
+  getHolidayById,
+  isAppRegion,
+  type AppRegion,
+  type HolidayId,
+} from "./holidays";
 import {
   DEFAULT_POSTCARD_BACKGROUND,
   DEFAULT_POSTCARD_FONT,
+  isPostcardBackgroundId,
+  isPostcardFontId,
+  type PostcardBackgroundId,
+  type PostcardFontId,
 } from "./postcard-styles";
 
-export interface FavoritePostcard extends PostcardComposition {
+export interface FavoritePostcard {
   id: string;
   timestamp: number;
+  region: AppRegion;
+  holidayId: HolidayId;
+  greeting: string;
+  backgroundStyle: PostcardBackgroundId;
+  fontStyle: PostcardFontId;
 }
 
 const STORAGE_KEY = "luckee_favorites";
@@ -28,57 +42,65 @@ export function getFavorites(): FavoritePostcard[] {
   }
 }
 
+function readHolidayId(value: unknown): HolidayId | undefined {
+  if (typeof value === "string") {
+    return getHolidayById(value)?.id;
+  }
+
+  if (value && typeof value === "object" && "id" in value) {
+    const holidayId = (value as { id: unknown }).id;
+    return typeof holidayId === "string" ? getHolidayById(holidayId)?.id : undefined;
+  }
+
+  return undefined;
+}
+
 function normalizeFavorite(value: unknown): FavoritePostcard | null {
   if (!value || typeof value !== "object") return null;
 
-  const favorite = value as Omit<Partial<FavoritePostcard>, "region"> & {
-    holidayId?: string;
-    region?: string;
-  };
-  const region = favorite.region === "both" ? "all" : favorite.region;
-  if (
-    region !== "all" &&
-    region !== "US" &&
-    region !== "UK" &&
-    region !== "CA"
-  ) {
+  const favorite = value as Record<string, unknown>;
+  const regionValue = favorite.region === "both" ? "all" : favorite.region;
+  if (typeof regionValue !== "string" || !isAppRegion(regionValue)) {
     return null;
-  }
-  if (
-    favorite.id &&
-    favorite.holiday &&
-    favorite.greeting &&
-    favorite.backgroundStyle &&
-    favorite.fontStyle &&
-    favorite.timestamp
-  ) {
-    return { ...favorite, region } as FavoritePostcard;
   }
 
-  const holiday = favorite.holidayId
-    ? getHolidayById(favorite.holidayId)
-    : undefined;
-  if (!favorite.id || !holiday || !favorite.greeting || !favorite.timestamp) {
+  const holidayId = readHolidayId(favorite.holidayId ?? favorite.holiday);
+  if (
+    typeof favorite.id !== "string" ||
+    !holidayId ||
+    typeof favorite.greeting !== "string" ||
+    typeof favorite.timestamp !== "number"
+  ) {
     return null;
   }
+
+  const backgroundStyle =
+    typeof favorite.backgroundStyle === "string" &&
+    isPostcardBackgroundId(favorite.backgroundStyle)
+      ? favorite.backgroundStyle
+      : DEFAULT_POSTCARD_BACKGROUND;
+  const fontStyle =
+    typeof favorite.fontStyle === "string" && isPostcardFontId(favorite.fontStyle)
+      ? favorite.fontStyle
+      : DEFAULT_POSTCARD_FONT;
 
   return {
     id: favorite.id,
     timestamp: favorite.timestamp,
-    region,
-    holiday,
+    region: regionValue,
+    holidayId,
     greeting: favorite.greeting,
-    backgroundStyle: DEFAULT_POSTCARD_BACKGROUND,
-    fontStyle: DEFAULT_POSTCARD_FONT,
+    backgroundStyle,
+    fontStyle,
   };
 }
 
 export function isSameComposition(
-  favorite: Pick<FavoritePostcard, keyof PostcardComposition>,
+  favorite: FavoritePostcard,
   composition: PostcardComposition
 ): boolean {
   return (
-    favorite.holiday.id === composition.holiday.id &&
+    favorite.holidayId === composition.holiday.id &&
     favorite.greeting === composition.greeting &&
     favorite.region === composition.region &&
     favorite.backgroundStyle === composition.backgroundStyle &&
@@ -98,8 +120,12 @@ export function saveFavorite(
 
     const newFavorite: FavoritePostcard = {
       id: `fav_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
-      ...composition,
       timestamp: Date.now(),
+      region: composition.region,
+      holidayId: composition.holiday.id,
+      greeting: composition.greeting,
+      backgroundStyle: composition.backgroundStyle,
+      fontStyle: composition.fontStyle,
     };
     localStorage.setItem(
       STORAGE_KEY,

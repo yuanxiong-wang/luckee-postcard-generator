@@ -1,47 +1,179 @@
-/**
- * Holiday Data Structure
- *
- * Each holiday includes:
- * - name: Display name for the greeting
- * - date: MM-DD fallback for fixed-date holidays
- * - greetings: Array of random greeting messages to choose from
- * - colors: Seasonal color palette (background, accent, text)
- */
-
-export interface Holiday {
-  id: string;
-  name: string;
-  date: string;
-  dynamicDate?: HolidayDateRule;
-  greetings: string[];
-  colors: {
-    background: string;
-    accent: string;
-    accentLight: string;
-    text: string;
-    textLight: string;
-  };
-  regions: CountryRegion[];
-}
-
 export type CountryRegion = "US" | "UK" | "CA";
 export type AppRegion = CountryRegion | "all";
-export type HolidayDateRule =
-  | "easter"
-  | "third-monday-january"
-  | "third-monday-february"
-  | "monday-before-may-25"
-  | "last-monday-may"
-  | "first-monday-september"
-  | "second-monday-october"
-  | "fourth-thursday-november";
 
-export const holidays: Holiday[] = [
-  // Winter Holidays
+export const ALL_COUNTRY_REGIONS: readonly CountryRegion[] = ["US", "UK", "CA"];
+
+export type DateRule =
+  | { kind: "fixed"; month: number; day: number }
+  | { kind: "nth-weekday"; month: number; weekday: number; nth: number }
+  | { kind: "last-weekday"; month: number; weekday: number }
+  | { kind: "monday-on-or-before"; month: number; day: number }
+  | { kind: "easter" };
+
+export interface HolidayPalette {
+  background: string;
+  accent: string;
+  accentLight: string;
+  text: string;
+  textLight: string;
+}
+
+interface HolidayDefinition {
+  id: string;
+  name: string;
+  date: DateRule;
+  greetings: readonly string[];
+  colors: HolidayPalette;
+  regions: readonly CountryRegion[];
+  artwork: string;
+}
+
+function artwork(file: string): string {
+  return `/holiday-backgrounds/${file}.webp`;
+}
+
+const navyRed: HolidayPalette = {
+  background: "#1a3a52",
+  accent: "#e74c3c",
+  accentLight: "#f8d7da",
+  text: "#f5f1e8",
+  textLight: "#d4a574",
+};
+
+const creamRed: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#e74c3c",
+  accentLight: "#f8d7da",
+  text: "#1a3a52",
+  textLight: "#d4a574",
+};
+
+const creamGreen: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#27ae60",
+  accentLight: "#d5f4e6",
+  text: "#1a3a52",
+  textLight: "#d4a574",
+};
+
+const creamGold: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#f39c12",
+  accentLight: "#fce4d6",
+  text: "#1a3a52",
+  textLight: "#7a9b8e",
+};
+
+const creamNavy: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#1a3a52",
+  accentLight: "#c9d8e3",
+  text: "#1a3a52",
+  textLight: "#d4a574",
+};
+
+const creamSage: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#7a9b8e",
+  accentLight: "#dbe7df",
+  text: "#1a3a52",
+  textLight: "#d4a574",
+};
+
+const creamCrimson: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#c0392b",
+  accentLight: "#f4d5d1",
+  text: "#1a3a52",
+  textLight: "#7a9b8e",
+};
+
+const creamCrimsonWarm: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#c0392b",
+  accentLight: "#f4d5d1",
+  text: "#1a3a52",
+  textLight: "#d4a574",
+};
+
+const creamMaple: HolidayPalette = {
+  background: "#f5f1e8",
+  accent: "#d52b1e",
+  accentLight: "#f6d4d0",
+  text: "#1a3a52",
+  textLight: "#d4a574",
+};
+
+const harvest: HolidayPalette = {
+  background: "#f9f3e6",
+  accent: "#d84315",
+  accentLight: "#ffccbc",
+  text: "#1a3a52",
+  textLight: "#7a9b8e",
+};
+
+const solstice: HolidayPalette = {
+  background: "#f9f3e6",
+  accent: "#ff6b35",
+  accentLight: "#ffe0cc",
+  text: "#1a3a52",
+  textLight: "#d4a574",
+};
+
+const orangeHarvest: HolidayPalette = {
+  background: "#f9f3e6",
+  accent: "#ff6b35",
+  accentLight: "#ffe0cc",
+  text: "#1a3a52",
+  textLight: "#7a9b8e",
+};
+
+const halloween: HolidayPalette = {
+  background: "#2c1810",
+  accent: "#ff6b35",
+  accentLight: "#ffe0cc",
+  text: "#f5f1e8",
+  textLight: "#d4a574",
+};
+
+const thanksgiving: HolidayPalette = {
+  background: "#5d4037",
+  accent: "#d84315",
+  accentLight: "#ffccbc",
+  text: "#f5f1e8",
+  textLight: "#d4a574",
+};
+
+const navyGreen: HolidayPalette = {
+  background: "#1a3a52",
+  accent: "#27ae60",
+  accentLight: "#d5f4e6",
+  text: "#f5f1e8",
+  textLight: "#d4a574",
+};
+
+const firstMondaySeptember: DateRule = {
+  kind: "nth-weekday",
+  month: 9,
+  weekday: 1,
+  nth: 1,
+};
+
+const laborArtwork = artwork("thanksgiving");
+
+const laborGreetings = [
+  "Cheers to Hard Work",
+  "Enjoy the Long Weekend",
+  "Celebrating Every Contribution",
+  "With Thanks for All You Do",
+  "Rest, Recharge & Celebrate",
+] as const;
+
+export const holidays = [
   {
     id: "new-year",
     name: "Happy New Year",
-    date: "01-01",
+    date: { kind: "fixed", month: 1, day: 1 },
     greetings: [
       "Happy New Year",
       "Cheers to New Beginnings",
@@ -50,84 +182,14 @@ export const holidays: Holiday[] = [
       "A Bright Year Ahead",
       "New Year, Fresh Momentum",
     ],
-    colors: {
-      background: "#1a3a52",
-      accent: "#e74c3c",
-      accentLight: "#f8d7da",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
-    regions: [],
-  },
-  {
-    id: "valentines",
-    name: "Happy Valentine's Day",
-    date: "02-14",
-    greetings: [
-      "Happy Valentine's Day",
-      "Spreading Love & Cheer",
-      "With Love & Appreciation",
-      "Celebrating Connection",
-      "Warm Wishes from Our Team",
-      "A Note of Appreciation",
-    ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#e74c3c",
-      accentLight: "#f8d7da",
-      text: "#1a3a52",
-      textLight: "#d4a574",
-    },
-    regions: [],
-  },
-  {
-    id: "st-patricks",
-    name: "Happy St. Patrick's Day",
-    date: "03-17",
-    greetings: [
-      "Happy St. Patrick's Day",
-      "May Your Day Be Lucky",
-      "Feeling Lucky",
-      "Luck of the Irish",
-      "Sending a Little Luck",
-      "Good Fortune to You",
-    ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#27ae60",
-      accentLight: "#d5f4e6",
-      text: "#1a3a52",
-      textLight: "#d4a574",
-    },
-    regions: [],
-  },
-  {
-    id: "easter",
-    name: "Happy Easter",
-    date: "03-31",
-    dynamicDate: "easter",
-    greetings: [
-      "Happy Easter",
-      "Wishing You a Joyful Easter",
-      "Spring Blessings",
-      "Easter Joy & Renewal",
-      "A Season of Renewal",
-      "Warm Spring Wishes",
-    ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#f39c12",
-      accentLight: "#fce4d6",
-      text: "#1a3a52",
-      textLight: "#7a9b8e",
-    },
-    regions: [],
+    colors: navyRed,
+    regions: ALL_COUNTRY_REGIONS,
+    artwork: artwork("new-year"),
   },
   {
     id: "mlk-day",
     name: "Happy Martin Luther King Jr. Day",
-    date: "01-15",
-    dynamicDate: "third-monday-january",
+    date: { kind: "nth-weekday", month: 1, weekday: 1, nth: 3 },
     greetings: [
       "Honoring Dr. King",
       "Celebrating Service & Hope",
@@ -136,20 +198,30 @@ export const holidays: Holiday[] = [
       "Honoring a Legacy of Hope",
       "Reflecting with Purpose",
     ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#1a3a52",
-      accentLight: "#c9d8e3",
-      text: "#1a3a52",
-      textLight: "#d4a574",
-    },
+    colors: creamNavy,
     regions: ["US"],
+    artwork: artwork("new-year"),
+  },
+  {
+    id: "valentines",
+    name: "Happy Valentine's Day",
+    date: { kind: "fixed", month: 2, day: 14 },
+    greetings: [
+      "Happy Valentine's Day",
+      "Spreading Love & Cheer",
+      "With Love & Appreciation",
+      "Celebrating Connection",
+      "Warm Wishes from Our Team",
+      "A Note of Appreciation",
+    ],
+    colors: creamRed,
+    regions: ALL_COUNTRY_REGIONS,
+    artwork: artwork("valentines"),
   },
   {
     id: "family-day",
     name: "Happy Family Day",
-    date: "02-15",
-    dynamicDate: "third-monday-february",
+    date: { kind: "nth-weekday", month: 2, weekday: 1, nth: 3 },
     greetings: [
       "Happy Family Day",
       "Celebrating Time Together",
@@ -158,20 +230,14 @@ export const holidays: Holiday[] = [
       "A Day for What Matters",
       "Sending Family Day Warmth",
     ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#7a9b8e",
-      accentLight: "#dbe7df",
-      text: "#1a3a52",
-      textLight: "#d4a574",
-    },
+    colors: creamSage,
     regions: ["CA"],
+    artwork: artwork("valentines"),
   },
   {
     id: "presidents-day",
     name: "Happy Presidents Day",
-    date: "02-15",
-    dynamicDate: "third-monday-february",
+    date: { kind: "nth-weekday", month: 2, weekday: 1, nth: 3 },
     greetings: [
       "Happy Presidents Day",
       "Honoring Leadership",
@@ -180,20 +246,46 @@ export const holidays: Holiday[] = [
       "With Respect for Service",
       "Reflecting on Leadership",
     ],
-    colors: {
-      background: "#1a3a52",
-      accent: "#e74c3c",
-      accentLight: "#f8d7da",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
+    colors: navyRed,
     regions: ["US"],
+    artwork: artwork("independence-day"),
+  },
+  {
+    id: "st-patricks",
+    name: "Happy St. Patrick's Day",
+    date: { kind: "fixed", month: 3, day: 17 },
+    greetings: [
+      "Happy St. Patrick's Day",
+      "May Your Day Be Lucky",
+      "Feeling Lucky",
+      "Luck of the Irish",
+      "Sending a Little Luck",
+      "Good Fortune to You",
+    ],
+    colors: creamGreen,
+    regions: ALL_COUNTRY_REGIONS,
+    artwork: artwork("st-patricks"),
+  },
+  {
+    id: "easter",
+    name: "Happy Easter",
+    date: { kind: "easter" },
+    greetings: [
+      "Happy Easter",
+      "Wishing You a Joyful Easter",
+      "Spring Blessings",
+      "Easter Joy & Renewal",
+      "A Season of Renewal",
+      "Warm Spring Wishes",
+    ],
+    colors: creamGold,
+    regions: ALL_COUNTRY_REGIONS,
+    artwork: artwork("easter"),
   },
   {
     id: "victoria-day",
     name: "Happy Victoria Day",
-    date: "05-24",
-    dynamicDate: "monday-before-may-25",
+    date: { kind: "monday-on-or-before", month: 5, day: 24 },
     greetings: [
       "Happy Victoria Day",
       "Cheers to the Long Weekend",
@@ -202,20 +294,14 @@ export const holidays: Holiday[] = [
       "A Bright Start to Summer",
       "Enjoy the Holiday Weekend",
     ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#c0392b",
-      accentLight: "#f4d5d1",
-      text: "#1a3a52",
-      textLight: "#7a9b8e",
-    },
+    colors: creamCrimson,
     regions: ["CA"],
+    artwork: artwork("summer-solstice"),
   },
   {
     id: "memorial-day",
     name: "Happy Memorial Day",
-    date: "05-31",
-    dynamicDate: "last-monday-may",
+    date: { kind: "last-weekday", month: 5, weekday: 1 },
     greetings: [
       "Remembering with Gratitude",
       "Honoring Memorial Day",
@@ -224,61 +310,14 @@ export const holidays: Holiday[] = [
       "Remembering Their Sacrifice",
       "With Honor and Gratitude",
     ],
-    colors: {
-      background: "#1a3a52",
-      accent: "#e74c3c",
-      accentLight: "#f8d7da",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
+    colors: navyRed,
     regions: ["US"],
-  },
-  {
-    id: "summer-solstice",
-    name: "Happy Summer Solstice",
-    date: "06-21",
-    greetings: [
-      "Happy Summer Solstice",
-      "Celebrating the Longest Day",
-      "Bright Days Ahead",
-      "Sunshine & Warmth",
-      "Here Comes the Light",
-      "Golden Hours Ahead",
-    ],
-    colors: {
-      background: "#f9f3e6",
-      accent: "#ff6b35",
-      accentLight: "#ffe0cc",
-      text: "#1a3a52",
-      textLight: "#d4a574",
-    },
-    regions: [],
-  },
-  {
-    id: "independence-day",
-    name: "Happy Independence Day",
-    date: "07-04",
-    greetings: [
-      "Happy Independence Day",
-      "Celebrating Freedom",
-      "Land of the Free",
-      "Stars & Stripes",
-      "Red, White & Bright",
-      "Wishing You a Sparkling Fourth",
-    ],
-    colors: {
-      background: "#1a3a52",
-      accent: "#e74c3c",
-      accentLight: "#f8d7da",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
-    regions: ["US"],
+    artwork: artwork("independence-day"),
   },
   {
     id: "juneteenth",
     name: "Happy Juneteenth",
-    date: "06-19",
+    date: { kind: "fixed", month: 6, day: 19 },
     greetings: [
       "Happy Juneteenth",
       "Celebrating Freedom",
@@ -287,19 +326,30 @@ export const holidays: Holiday[] = [
       "A Day of Freedom and Hope",
       "Honoring the Journey Forward",
     ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#c0392b",
-      accentLight: "#f4d5d1",
-      text: "#1a3a52",
-      textLight: "#d4a574",
-    },
+    colors: creamCrimsonWarm,
     regions: ["US"],
+    artwork: artwork("summer-solstice"),
+  },
+  {
+    id: "summer-solstice",
+    name: "Happy Summer Solstice",
+    date: { kind: "fixed", month: 6, day: 21 },
+    greetings: [
+      "Happy Summer Solstice",
+      "Celebrating the Longest Day",
+      "Bright Days Ahead",
+      "Sunshine & Warmth",
+      "Here Comes the Light",
+      "Golden Hours Ahead",
+    ],
+    colors: solstice,
+    regions: ALL_COUNTRY_REGIONS,
+    artwork: artwork("summer-solstice"),
   },
   {
     id: "canada-day",
     name: "Happy Canada Day",
-    date: "07-01",
+    date: { kind: "fixed", month: 7, day: 1 },
     greetings: [
       "Happy Canada Day",
       "Celebrating Canada",
@@ -308,63 +358,48 @@ export const holidays: Holiday[] = [
       "Proudly Wishing You Well",
       "Cheers from Coast to Coast",
     ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#d52b1e",
-      accentLight: "#f6d4d0",
-      text: "#1a3a52",
-      textLight: "#d4a574",
-    },
+    colors: creamMaple,
     regions: ["CA"],
+    artwork: artwork("independence-day"),
+  },
+  {
+    id: "independence-day",
+    name: "Happy Independence Day",
+    date: { kind: "fixed", month: 7, day: 4 },
+    greetings: [
+      "Happy Independence Day",
+      "Celebrating Freedom",
+      "Land of the Free",
+      "Stars & Stripes",
+      "Red, White & Bright",
+      "Wishing You a Sparkling Fourth",
+    ],
+    colors: navyRed,
+    regions: ["US"],
+    artwork: artwork("independence-day"),
   },
   {
     id: "labor-day",
     name: "Happy Labor Day",
-    date: "09-01",
-    dynamicDate: "first-monday-september",
-    greetings: [
-      "Happy Labor Day",
-      "Cheers to Hard Work",
-      "Enjoy the Long Weekend",
-      "Celebrating Every Contribution",
-      "With Thanks for All You Do",
-      "Rest, Recharge & Celebrate",
-    ],
-    colors: {
-      background: "#f9f3e6",
-      accent: "#d84315",
-      accentLight: "#ffccbc",
-      text: "#1a3a52",
-      textLight: "#7a9b8e",
-    },
+    date: firstMondaySeptember,
+    greetings: ["Happy Labor Day", ...laborGreetings],
+    colors: harvest,
     regions: ["US"],
+    artwork: laborArtwork,
   },
   {
     id: "labour-day",
     name: "Happy Labour Day",
-    date: "09-01",
-    dynamicDate: "first-monday-september",
-    greetings: [
-      "Happy Labour Day",
-      "Cheers to Hard Work",
-      "Enjoy the Long Weekend",
-      "Celebrating Every Contribution",
-      "With Thanks for All You Do",
-      "Rest, Recharge & Celebrate",
-    ],
-    colors: {
-      background: "#f9f3e6",
-      accent: "#d84315",
-      accentLight: "#ffccbc",
-      text: "#1a3a52",
-      textLight: "#7a9b8e",
-    },
+    date: firstMondaySeptember,
+    greetings: ["Happy Labour Day", ...laborGreetings],
+    colors: harvest,
     regions: ["CA"],
+    artwork: laborArtwork,
   },
   {
     id: "truth-and-reconciliation-day",
     name: "National Day for Truth and Reconciliation",
-    date: "09-30",
+    date: { kind: "fixed", month: 9, day: 30 },
     greetings: [
       "Truth, Reflection & Reconciliation",
       "Honoring Truth and Reconciliation",
@@ -373,20 +408,14 @@ export const holidays: Holiday[] = [
       "Reflecting with Care",
       "Truth Before Reconciliation",
     ],
-    colors: {
-      background: "#f9f3e6",
-      accent: "#ff6b35",
-      accentLight: "#ffe0cc",
-      text: "#1a3a52",
-      textLight: "#7a9b8e",
-    },
+    colors: orangeHarvest,
     regions: ["CA"],
+    artwork: artwork("summer-solstice"),
   },
   {
     id: "canadian-thanksgiving",
     name: "Happy Thanksgiving",
-    date: "10-08",
-    dynamicDate: "second-monday-october",
+    date: { kind: "nth-weekday", month: 10, weekday: 1, nth: 2 },
     greetings: [
       "Happy Thanksgiving",
       "Grateful for You",
@@ -395,19 +424,14 @@ export const holidays: Holiday[] = [
       "Warm Harvest Wishes",
       "With Thanks This Season",
     ],
-    colors: {
-      background: "#5d4037",
-      accent: "#d84315",
-      accentLight: "#ffccbc",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
+    colors: thanksgiving,
     regions: ["CA"],
+    artwork: artwork("thanksgiving"),
   },
   {
     id: "halloween",
     name: "Happy Halloween",
-    date: "10-31",
+    date: { kind: "fixed", month: 10, day: 31 },
     greetings: [
       "Happy Halloween",
       "Spooky Season",
@@ -416,41 +440,14 @@ export const holidays: Holiday[] = [
       "A Little Seasonal Magic",
       "Frightfully Fun Wishes",
     ],
-    colors: {
-      background: "#2c1810",
-      accent: "#ff6b35",
-      accentLight: "#ffe0cc",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
-    regions: [],
-  },
-  {
-    id: "thanksgiving",
-    name: "Happy Thanksgiving",
-    date: "11-23",
-    dynamicDate: "fourth-thursday-november",
-    greetings: [
-      "Happy Thanksgiving",
-      "Grateful for You",
-      "Thankful & Blessed",
-      "Gratitude & Joy",
-      "Warm Harvest Wishes",
-      "With Thanks This Season",
-    ],
-    colors: {
-      background: "#5d4037",
-      accent: "#d84315",
-      accentLight: "#ffccbc",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
-    regions: ["US"],
+    colors: halloween,
+    regions: ALL_COUNTRY_REGIONS,
+    artwork: artwork("halloween"),
   },
   {
     id: "veterans-day",
     name: "Happy Veterans Day",
-    date: "11-11",
+    date: { kind: "fixed", month: 11, day: 11 },
     greetings: [
       "Honoring Veterans",
       "With Gratitude for Your Service",
@@ -459,19 +456,14 @@ export const holidays: Holiday[] = [
       "Honoring All Who Served",
       "With Respect and Thanks",
     ],
-    colors: {
-      background: "#1a3a52",
-      accent: "#e74c3c",
-      accentLight: "#f8d7da",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
+    colors: navyRed,
     regions: ["US"],
+    artwork: artwork("independence-day"),
   },
   {
     id: "remembrance-day",
     name: "Remembrance Day",
-    date: "11-11",
+    date: { kind: "fixed", month: 11, day: 11 },
     greetings: [
       "Remembering with Gratitude",
       "Lest We Forget",
@@ -480,19 +472,30 @@ export const holidays: Holiday[] = [
       "Remembering Those Who Served",
       "In Gratitude and Reflection",
     ],
-    colors: {
-      background: "#f5f1e8",
-      accent: "#c0392b",
-      accentLight: "#f4d5d1",
-      text: "#1a3a52",
-      textLight: "#7a9b8e",
-    },
+    colors: creamCrimson,
     regions: ["CA"],
+    artwork: artwork("thanksgiving"),
+  },
+  {
+    id: "thanksgiving",
+    name: "Happy Thanksgiving",
+    date: { kind: "nth-weekday", month: 11, weekday: 4, nth: 4 },
+    greetings: [
+      "Happy Thanksgiving",
+      "Grateful for You",
+      "Thankful & Blessed",
+      "Gratitude & Joy",
+      "Warm Harvest Wishes",
+      "With Thanks This Season",
+    ],
+    colors: thanksgiving,
+    regions: ["US"],
+    artwork: artwork("thanksgiving"),
   },
   {
     id: "christmas",
     name: "Happy Holidays",
-    date: "12-25",
+    date: { kind: "fixed", month: 12, day: 25 },
     greetings: [
       "Happy Holidays",
       "Merry Christmas",
@@ -501,19 +504,14 @@ export const holidays: Holiday[] = [
       "Peace and Warmth to You",
       "Season's Brightest Wishes",
     ],
-    colors: {
-      background: "#1a3a52",
-      accent: "#e74c3c",
-      accentLight: "#f8d7da",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
-    regions: [],
+    colors: navyRed,
+    regions: ALL_COUNTRY_REGIONS,
+    artwork: artwork("christmas"),
   },
   {
     id: "boxing-day",
     name: "Happy Boxing Day",
-    date: "12-26",
+    date: { kind: "fixed", month: 12, day: 26 },
     greetings: [
       "Happy Boxing Day",
       "Sharing the Joy",
@@ -522,13 +520,19 @@ export const holidays: Holiday[] = [
       "Warm Wishes After Christmas",
       "A Day for Giving Back",
     ],
-    colors: {
-      background: "#1a3a52",
-      accent: "#27ae60",
-      accentLight: "#d5f4e6",
-      text: "#f5f1e8",
-      textLight: "#d4a574",
-    },
+    colors: navyGreen,
     regions: ["UK", "CA"],
+    artwork: artwork("boxing-day"),
   },
-];
+] as const satisfies readonly HolidayDefinition[];
+
+export type Holiday = (typeof holidays)[number];
+export type HolidayId = Holiday["id"];
+
+export function isAppRegion(value: string): value is AppRegion {
+  return value === "all" || value === "US" || value === "UK" || value === "CA";
+}
+
+export function isHolidayId(value: string): value is HolidayId {
+  return holidays.some(holiday => holiday.id === value);
+}

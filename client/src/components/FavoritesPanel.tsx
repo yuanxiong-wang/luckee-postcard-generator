@@ -1,13 +1,8 @@
-/**
- * FavoritesPanel Component
- *
- * Displays saved favorite postcards with quick access and management options
- */
-
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { FavoritePostcard } from "@/lib/favorites";
+import { getHolidayById } from "@/lib/holidays";
 import { FolderOpen, Heart, Trash2, X } from "lucide-react";
-import { FavoritePostcard } from "@/lib/favorites";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface FavoritesPanelProps {
@@ -40,23 +35,17 @@ export function FavoritesPanel({
 
   const handleSelectFavorite = (favorite: FavoritePostcard) => {
     onSelectFavorite(favorite);
-    toast.success(`Loaded: ${favorite.greeting.substring(0, 30)}...`);
+    toast.success(`Loaded: ${favorite.greeting.substring(0, 30)}`);
   };
 
   if (favorites.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 text-center">
-        <Heart className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-        <h3
-          className="text-lg font-semibold text-slate-700 mb-2"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
+      <div className="rounded-lg bg-white p-6 text-center shadow-md">
+        <Heart className="mx-auto mb-3 h-12 w-12 text-slate-300" />
+        <h3 className="mb-2 font-[Georgia,serif] text-lg font-semibold text-slate-700">
           No Favorites Yet
         </h3>
-        <p
-          className="text-sm text-slate-600"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
+        <p className="font-[Georgia,serif] text-sm text-slate-600">
           Save your favorite postcards to access them quickly later.
         </p>
       </div>
@@ -64,120 +53,105 @@ export function FavoritesPanel({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-4 flex items-center justify-between border-b border-slate-200">
-        <h3
-          className="text-lg font-semibold text-slate-800 flex items-center gap-2"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          <Heart className="w-5 h-5 text-orange-500 fill-current" />
+    <div className="overflow-hidden rounded-lg bg-white shadow-md">
+      <div className="flex items-center justify-between border-b border-slate-200 bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-4">
+        <h3 className="flex items-center gap-2 font-[Georgia,serif] text-lg font-semibold text-slate-800">
+          <Heart className="h-5 w-5 fill-current text-orange-500" />
           Saved Favorites ({favorites.length})
         </h3>
         {onClose && (
           <button
             onClick={onClose}
             aria-label="Close favorites"
-            className="text-slate-500 hover:text-slate-700 transition-colors"
+            className="text-slate-500 transition-colors hover:text-slate-700"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         )}
       </div>
 
       <div className="max-h-96 overflow-y-auto">
-        {favorites.map((favorite, index) => (
-          <div
-            key={favorite.id}
-            className={`p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors ${
-              index === favorites.length - 1 ? "border-b-0" : ""
-            }`}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <button
-                  onClick={() =>
-                    setExpandedId(
-                      expandedId === favorite.id ? null : favorite.id
-                    )
-                  }
-                  className="text-left w-full"
-                >
-                  <p
-                    className="font-semibold text-slate-700 text-sm hover:text-orange-600 transition-colors truncate"
-                    style={{ fontFamily: "Playfair Display, serif" }}
-                  >
-                    {favorite.greeting}
-                  </p>
-                  <p
-                    className="text-xs text-slate-500 mt-1"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {favorite.holiday.name} •{" "}
-                    {new Date(favorite.timestamp).toLocaleDateString()}
-                  </p>
-                </button>
+        {favorites.map((favorite, index) => {
+          const holidayName =
+            getHolidayById(favorite.holidayId)?.name ?? "Unknown holiday";
 
-                {/* Expanded view */}
-                {expandedId === favorite.id && (
-                  <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        onClick={() => handleSelectFavorite(favorite)}
-                        size="sm"
-                        className="flex-1 text-xs"
-                        style={{
-                          backgroundColor: "#d84315",
-                          color: "#f5f1e8",
-                        }}
-                      >
-                        Load
-                      </Button>
-                      <Button
-                        onClick={() => handleRemoveFavorite(favorite.id)}
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 text-xs"
-                      >
-                        <Trash2 className="w-3 h-3 mr-1" />
-                        Delete
-                      </Button>
+          return (
+            <div
+              key={favorite.id}
+              className={`border-b border-slate-100 p-4 transition-colors hover:bg-slate-50 ${
+                index === favorites.length - 1 ? "border-b-0" : ""
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <button
+                    onClick={() =>
+                      setExpandedId(
+                        expandedId === favorite.id ? null : favorite.id
+                      )
+                    }
+                    className="w-full text-left"
+                  >
+                    <p className="truncate text-sm font-semibold text-slate-700 transition-colors hover:text-orange-600">
+                      {favorite.greeting}
+                    </p>
+                    <p className="mt-1 font-[Georgia,serif] text-xs text-slate-500">
+                      {holidayName} •{" "}
+                      {new Date(favorite.timestamp).toLocaleDateString()}
+                    </p>
+                  </button>
+
+                  {expandedId === favorite.id && (
+                    <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          onClick={() => handleSelectFavorite(favorite)}
+                          size="sm"
+                          className="flex-1 text-xs"
+                          style={{
+                            backgroundColor: "#d84315",
+                            color: "#f5f1e8",
+                          }}
+                        >
+                          Load
+                        </Button>
+                        <Button
+                          onClick={() => handleRemoveFavorite(favorite.id)}
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 text-xs"
+                        >
+                          <Trash2 className="mr-1 h-3 w-3" />
+                          Delete
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              {/* Quick actions */}
-              <div className="flex gap-1">
-                <button
-                  onClick={() => handleSelectFavorite(favorite)}
-                  aria-label={`Load ${favorite.greeting}`}
-                  className="p-2 text-slate-500 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors"
-                  title="Load this postcard"
-                >
-                  <FolderOpen className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleRemoveFavorite(favorite.id)}
-                  aria-label={`Remove ${favorite.greeting} from favorites`}
-                  className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                  title="Remove from favorites"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => handleSelectFavorite(favorite)}
+                    aria-label={`Load ${favorite.greeting}`}
+                    className="rounded p-2 text-slate-500 transition-colors hover:bg-orange-50 hover:text-orange-600"
+                    title="Load this postcard"
+                  >
+                    <FolderOpen className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleRemoveFavorite(favorite.id)}
+                    aria-label={`Remove ${favorite.greeting} from favorites`}
+                    className="rounded p-2 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                    title="Remove from favorites"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-
-      {favorites.length > 0 && (
-        <div
-          className="bg-slate-50 px-6 py-3 border-t border-slate-200 text-xs text-slate-600 text-center"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          Click on a favorite to expand options
-        </div>
-      )}
     </div>
   );
 }

@@ -1,28 +1,12 @@
-export function generateShareText(greeting: string): string {
-  return `${greeting} from our team at Luckee! 🎉`;
+export function generateLinkedInShareURL(pageUrl: string): string {
+  return `https://www.linkedin.com/sharing/share-offsite/?${new URLSearchParams({
+    url: pageUrl,
+  })}`;
 }
 
-export function generateLinkedInShareURL(
-  pageUrl: string,
-  title: string,
-  summary: string
-): string {
-  return `https://www.linkedin.com/sharing/share-offsite/?${new URLSearchParams(
-    {
-      url: pageUrl,
-      title,
-      summary,
-    }
-  )}`;
-}
-
-export function generateFacebookShareURL(
-  pageUrl: string,
-  quote: string
-): string {
+export function generateFacebookShareURL(pageUrl: string): string {
   return `https://www.facebook.com/sharer/sharer.php?${new URLSearchParams({
-    href: pageUrl,
-    quote,
+    u: pageUrl,
   })}`;
 }
 

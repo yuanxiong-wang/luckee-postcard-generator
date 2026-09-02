@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#e6ece6"/>
-  <path d="M0 0h1200v630H0z" fill="#fbfaf6" opacity=".48"/>
-  <rect x="130" y="120" width="940" height="390" rx="24" fill="#fbfaf6" stroke="#1d4f4a" stroke-width="10"/>
-  <path d="M170 172l430 190 430-190" fill="none" stroke="#b58b43" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="600" y="410" text-anchor="middle" fill="#142f34" font-family="Georgia, serif" font-size="78" font-weight="700">Luckee Seasonal Greetings</text>
-  <text x="600" y="465" text-anchor="middle" fill="#526569" font-family="Arial, sans-serif" font-size="30">Create polished holiday postcards for clients, partners, and teams.</text>
-</svg>

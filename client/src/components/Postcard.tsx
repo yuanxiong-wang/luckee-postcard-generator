@@ -10,7 +10,6 @@
 
 import { forwardRef } from "react";
 import type { Holiday } from "@/lib/holidays";
-import { getBackgroundForHoliday } from "@/lib/holiday-backgrounds";
 import {
   getPostcardBackgroundPresentation,
   getPostcardFont,
@@ -29,11 +28,10 @@ interface PostcardProps {
 
 export const Postcard = forwardRef<HTMLDivElement, PostcardProps>(
   function Postcard({ holiday, greeting, backgroundStyle, fontStyle }, ref) {
-    const bgImage = getBackgroundForHoliday(holiday.id);
     const background = getPostcardBackgroundPresentation(
       backgroundStyle,
       holiday,
-      bgImage
+      holiday.artwork
     );
     const font = getPostcardFont(fontStyle);
 

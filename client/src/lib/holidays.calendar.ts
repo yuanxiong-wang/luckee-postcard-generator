@@ -1,13 +1,14 @@
 import { holidays } from "./holidays.data.ts";
-import type { AppRegion, Holiday } from "./holidays.data.ts";
+import type { AppRegion, CountryRegion, Holiday } from "./holidays.data.ts";
 
 export function getCurrentOrNextHoliday(region: AppRegion = "all"): Holiday {
   const today = startOfDay(new Date());
-  const holidaysForRegion = getHolidaysByRegion(region);
+  const year = today.getFullYear();
+  const holidaysForRegion = getHolidaysByRegion(region, year);
 
   return (
     holidaysForRegion.find(
-      holiday => getHolidayDateForYear(holiday, today.getFullYear()) >= today
+      holiday => getHolidayDateForYear(holiday, year) >= today
     ) ?? holidaysForRegion[0]
   );
 }
@@ -47,16 +48,15 @@ export function getPreviousHoliday(
   ];
 }
 
-export function getHolidaysByRegion(region: AppRegion = "all"): Holiday[] {
-  const year = new Date().getFullYear();
-
+export function getHolidaysByRegion(
+  region: AppRegion = "all",
+  year = new Date().getFullYear()
+): Holiday[] {
   return holidays
     .filter(
-      holiday =>
-        region === "all" ||
-        holiday.regions.length === 0 ||
-        holiday.regions.includes(region)
+      holiday => region === "all" || isObservedIn(holiday, region)
     )
+    .slice()
     .sort(
       (left, right) =>
         getHolidayDateForYear(left, year).getTime() -
@@ -77,28 +77,35 @@ export function getHolidayDateString(
 }
 
 export function getHolidayDateForYear(holiday: Holiday, year: number): Date {
-  switch (holiday.dynamicDate) {
+  switch (holiday.date.kind) {
     case "easter":
       return getEasterDate(year);
-    case "third-monday-january":
-      return getNthWeekdayOfMonth(year, 0, 1, 3);
-    case "third-monday-february":
-      return getNthWeekdayOfMonth(year, 1, 1, 3);
-    case "monday-before-may-25":
-      return getMondayBeforeMay25(year);
-    case "last-monday-may":
-      return getLastWeekdayOfMonth(year, 4, 1);
-    case "first-monday-september":
-      return getNthWeekdayOfMonth(year, 8, 1, 1);
-    case "second-monday-october":
-      return getNthWeekdayOfMonth(year, 9, 1, 2);
-    case "fourth-thursday-november":
-      return getNthWeekdayOfMonth(year, 10, 4, 4);
-    default: {
-      const [month, day] = holiday.date.split("-").map(Number);
-      return new Date(year, month - 1, day);
-    }
+    case "nth-weekday":
+      return getNthWeekdayOfMonth(
+        year,
+        holiday.date.month - 1,
+        holiday.date.weekday,
+        holiday.date.nth
+      );
+    case "last-weekday":
+      return getLastWeekdayOfMonth(
+        year,
+        holiday.date.month - 1,
+        holiday.date.weekday
+      );
+    case "monday-on-or-before":
+      return getMondayOnOrBefore(
+        year,
+        holiday.date.month - 1,
+        holiday.date.day
+      );
+    case "fixed":
+      return new Date(year, holiday.date.month - 1, holiday.date.day);
   }
+}
+
+function isObservedIn(holiday: Holiday, region: CountryRegion): boolean {
+  return (holiday.regions as readonly CountryRegion[]).includes(region);
 }
 
 function getNthWeekdayOfMonth(
@@ -122,10 +129,14 @@ function getLastWeekdayOfMonth(
   return new Date(year, monthIndex, lastOfMonth.getDate() - offset);
 }
 
-function getMondayBeforeMay25(year: number): Date {
-  const may24 = new Date(year, 4, 24);
-  const offset = (may24.getDay() - 1 + 7) % 7;
-  return new Date(year, 4, may24.getDate() - offset);
+function getMondayOnOrBefore(
+  year: number,
+  monthIndex: number,
+  day: number
+): Date {
+  const anchor = new Date(year, monthIndex, day);
+  const offset = (anchor.getDay() - 1 + 7) % 7;
+  return new Date(year, monthIndex, day - offset);
 }
 
 function getEasterDate(year: number): Date {

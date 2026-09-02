@@ -5,7 +5,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getBackgroundForHoliday } from "@/lib/holiday-backgrounds";
 import {
   getPostcardBackgroundPresentation,
   postcardBackgroundOptions,
@@ -34,7 +33,7 @@ export function PostcardStyleControls({
   onFontChange,
   onReset,
 }: PostcardStyleControlsProps) {
-  const artworkUrl = getBackgroundForHoliday(holiday.id);
+  const artworkUrl = holiday.artwork;
 
   return (
     <div className="studio-panel p-5">

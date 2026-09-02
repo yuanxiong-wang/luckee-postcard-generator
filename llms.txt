@@ -1,0 +1,5 @@
+# Luckee Seasonal Postcard Generator
+
+Create polished seasonal postcards for US, UK, and Canadian holidays.
+
+Canonical URL: https://postcard.luckee.us/

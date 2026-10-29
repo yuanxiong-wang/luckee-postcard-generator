@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePostcardStudio } from "@/hooks/usePostcardStudio";
-import { getNextHoliday, getPreviousHoliday } from "@/lib/holidays";
+import { getHolidayDateForYear, getNextHoliday, getPreviousHoliday } from "@/lib/holidays";
 
 export default function Home() {
   const postcardRef = useRef<HTMLDivElement>(null);
@@ -28,19 +28,26 @@ export default function Home() {
   return (
     <div className="studio-shell py-8 md:py-14">
       <main className="container mx-auto max-w-6xl px-4">
-        <div className="mb-10 grid gap-5 md:grid-cols-[1.15fr_0.85fr] md:items-end">
+        <div className="studio-masthead mb-8 flex flex-wrap items-end justify-between gap-4 pb-6">
           <div>
-            <p className="studio-kicker mb-3">Seasonal correspondence desk</p>
+            <p className="studio-kicker mb-3">Luckee / The greeting collection</p>
             <h1 className="studio-title">Luckee Seasonal Greetings</h1>
           </div>
-          <p className="studio-copy max-w-xl md:justify-self-end md:text-right">
-            Compose a polished holiday postcard for clients, partners, and teams
-            across US, UK, and Canadian calendars.
-          </p>
+          <p className="studio-edition">US &nbsp; / &nbsp; UK &nbsp; / &nbsp; Canada</p>
         </div>
 
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
+            <div className="catalog-heading">
+              <div>
+                <p className="studio-kicker mb-2">From the collection</p>
+                <h2>{composition.holiday.name}</h2>
+              </div>
+              <div className="catalog-meta">
+                <span>{getHolidayDateForYear(composition.holiday, new Date().getFullYear()).toLocaleDateString("en-US", { month: "long", day: "numeric" })}</span>
+                <span>{composition.holiday.regions.join(" / ")}</span>
+              </div>
+            </div>
             <div className="studio-stage">
               <Postcard
                 ref={postcardRef}
@@ -97,7 +104,7 @@ export default function Home() {
             <Button
               onClick={studio.refreshGreeting}
               className="w-full py-6 text-base font-bold transition-all duration-200 hover:shadow-lg active:scale-95"
-              style={{ backgroundColor: "#1d4f4a", color: "#fbfaf6" }}
+              style={{ backgroundColor: "#783e49", color: "#ffffff" }}
             >
               <RefreshCw className="mr-2 h-5 w-5" />
               Refresh postcard

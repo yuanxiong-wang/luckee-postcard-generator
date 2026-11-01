@@ -1,184 +1,55 @@
 # Luckee Seasonal Postcard Generator
 
-A beautiful, dynamic postcard generator that creates seasonal greetings for Luckee based on US and UK holidays. Each postcard features a unique design with hand-drawn typography, warm nostalgic aesthetics, and holiday-specific artwork.
+A browser-based editor for creating seasonal greetings for clients, partners, and teams. The live site is [postcard.luckee.us](https://postcard.luckee.us/).
 
 ## Features
 
-### Automatic Holiday Detection
-- Detects the current or next upcoming holiday based on the user's selected region
-- Supports both US and UK holidays
-- Seamless switching between region preferences
+- Browse US, UK, and Canadian holidays, or view all regions together.
+- Select holiday artwork, background treatments, and typefaces.
+- Refresh or edit the greeting, save favorites, and browse the holiday calendar.
+- Download a postcard as PNG or PDF, copy a PNG, or share a link to the composition.
 
-### Supported Holidays
+Favorites and the selected region are stored in the browser's local storage. Shareable links include the greeting and design choices in the URL, so avoid including sensitive information in a greeting you share.
 
-**Winter Holidays:**
-- New Year (January 1)
-- Christmas (December 25)
-- Boxing Day (December 26) - UK only
+## Local Development
 
-**Spring Holidays:**
-- Valentine's Day (February 14)
-- St. Patrick's Day (March 17)
-- Easter (moveable)
+Prerequisites: Node.js with TypeScript stripping support for the holiday check, and pnpm 10.4.1 (the version pinned in `package.json`).
 
-**Summer Holidays:**
-- Summer Solstice (June 21)
-- Independence Day (July 4) - US only
-
-**Fall Holidays:**
-- Halloween (October 31)
-- Thanksgiving (November 23) - US only
-
-### Design Features
-
-**Warm Nostalgia Aesthetic:**
-- Hand-drawn botanical elements and decorative motifs
-- Seasonal color palettes that shift with the holidays
-- Vintage postcard-inspired layouts with asymmetric compositions
-- Elegant typography using Playfair Display for greetings and Georgia for supporting text
-
-**Consistent Branding:**
-- Fixed "From our team at, Luckee" signature on every postcard
-- Maintains brand identity across all seasonal variations
-- Professional, polished presentation
-
-**Dynamic Content:**
-- Random greeting messages for each holiday
-- Multiple decorative elements that vary by season
-- Beautiful background images that enhance the visual appeal
-
-**Enhanced User Capabilities:**
-- **Custom Message Editing:** Personalize greetings while keeping the Luckee signature fixed
-- **Download/Export:** Save postcards as PNG (digital) or PDF (printable)
-- **Social Sharing:** Share directly to LinkedIn and Facebook with pre-filled messages
-- **Favorites System:** Save and manage preferred postcard designs using local storage for quick access
-- **Holiday Navigation:** Browse through all available holidays with Next/Previous buttons for easy exploration
-
-### User Interface
-
-**Region Selection:**
-- Choose between "Both US & UK", "US Only", or "UK Only"
-- Automatically loads the appropriate holiday for the selected region
-
-**Holiday Information:**
-- Displays the current holiday name
-- Shows relevant decorative elements for the season
-- Provides context for the generated postcard
-
-**Generate Button:**
-- Creates new random variations of the current holiday postcard
-- Smooth animations and transitions
-- Responsive feedback on user interaction
-
-## Design Philosophy
-
-The postcard generator follows a **Warm Nostalgia with Hand-Drawn Character** design approach:
-
-- **Asymmetric Layouts:** Breaking rigid grids with organic, flowing compositions
-- **Seasonal Color Shifts:** Each holiday season has its own carefully chosen palette
-- **Botanical Elements:** Hand-drawn flowers, leaves, and decorative flourishes
-- **Textured Backgrounds:** Paper-like textures and watercolor effects
-- **Elegant Typography:** Mixing script and serif fonts for visual hierarchy
-- **Natural Animations:** Smooth transitions that enhance the tactile, handcrafted feeling
-
-## Technical Stack
-
-- **Frontend:** React 19 with TypeScript
-- **Styling:** Tailwind CSS 4 with custom design tokens
-- **Components:** shadcn/ui for consistent UI elements
-- **Routing:** Wouter for client-side navigation
-- **Fonts:** Playfair Display, Georgia, Poppins from Google Fonts
-
-## Project Structure
-
-```
-client/
-  src/
-    components/
-      Postcard.tsx              # Main postcard rendering component
-    pages/
-      Home.tsx                  # Main application page
-    lib/
-      holidays.data.ts          # Holiday records
-      holidays.calendar.ts      # Date rules and calendar queries
-      holiday-backgrounds.ts   # Background image mappings
-    App.tsx                     # Application router and layout
-    index.css                   # Global styles and design tokens
-  index.html                    # HTML template
+```sh
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-## How to Use
+Open the local URL printed by Vite. No application API keys are required.
 
-1. **Select Your Region:** Choose all supported holidays, or US, UK, or Canada only
-2. **View Current Holiday:** The postcard automatically displays the current or next upcoming holiday
-3. **Generate Variations:** Click "Generate New Postcard" to create different greeting variations
-4. **Save Your Postcard:** Save the full composition, including its greeting and styles
-
-## Customization
-
-### Adding New Holidays
-
-Edit `client/src/lib/holidays.data.ts` to add new holidays:
-
-```typescript
-{
-  id: 'holiday-id',
-  name: 'Holiday Name',
-  date: 'MM-DD',
-  greetings: ['Greeting 1', 'Greeting 2'],
-  colors: {
-    background: '#color',
-    accent: '#color',
-    accentLight: '#color',
-    text: '#color',
-    textLight: '#color',
-  },
-  regions: ['US'], // [] means all supported regions
-}
+```sh
+pnpm check            # TypeScript
+pnpm check:holidays   # Holiday data and calendar checks
 ```
 
-### Modifying Color Schemes
+## Project Layout
 
-Update the `colors` object in each holiday to change the seasonal palette. The system uses:
-- `background`: Main postcard background color
-- `accent`: Primary accent color for decorative elements
-- `accentLight`: Lighter accent for secondary elements
-- `text`: Primary text color
-- `textLight`: Secondary text color
+- `client/src/pages/Home.tsx`: editor layout.
+- `client/src/components/`: postcard, controls, calendar, and dialogs.
+- `client/src/lib/holidays.data.ts` and `holidays.calendar.ts`: holiday definitions and date rules.
+- `client/src/lib/postcard-styles.ts`: background and typeface options.
+- `client/public/holiday-backgrounds/`: source artwork.
+- `index.html`, `assets/`, and `holiday-backgrounds/`: static files served from the repository root.
 
-## Browser Support
+## Build And Deployment
 
-- Chrome/Chromium (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
+Cloudflare serves the static files in the repository root. `pnpm build` builds the app and synchronizes the root bundle. **The synchronization script recursively removes and replaces several output directories**, and Vite clears its build output. Review this behavior before running it, particularly where bulk deletion is prohibited.
 
-## Performance
+For a non-destructive verification build, choose a new temporary output directory:
 
-- Lightweight React components with minimal re-renders
-- Compressed background images for quick loading
-- Responsive design that works on all screen sizes
+```sh
+pnpm exec vite build --outDir /tmp/luckee-postcard-build --emptyOutDir false
+```
 
-## Accessibility
+This checks the build but does not update the production files. Deployments require the root HTML and referenced generated assets to match. The configured pre-push hook runs the normal build and checks those files, so it also uses the recursive synchronization described above.
 
-- Semantic HTML structure
-- Clear color contrast for text readability
-- Keyboard-navigable interface
-- ARIA labels for interactive elements
-
-## Future Enhancements
-
-- Download postcards as PNG/PDF
-- Share postcards via social media
-- Custom message editing
-- Additional holiday support
-- Animated postcard transitions
-- Dark mode support
+To add a holiday, follow the existing entries in `client/src/lib/holidays.data.ts`, provide its artwork in `client/public/holiday-backgrounds/`, and run the holiday checks.
 
 ## License
 
-All rights reserved. Created for Luckee.
-
-## Support
-
-For questions or issues, please contact the development team.
+This project is licensed under the [MIT License](LICENSE).

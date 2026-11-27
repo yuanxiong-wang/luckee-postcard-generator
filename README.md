@@ -26,6 +26,7 @@ Open the local URL printed by Vite. No application API keys are required.
 ```sh
 pnpm check            # TypeScript
 pnpm check:holidays   # Holiday data and calendar checks
+pnpm check:clipboard  # PNG conversion and clipboard activation checks
 ```
 
 ## Project Layout

@@ -26,9 +26,15 @@ function getImageDimensions(
   });
 }
 
-async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
-  const response = await fetch(dataUrl);
-  return response.blob();
+function dataUrlToBlob(dataUrl: string): Blob {
+  const encoded = dataUrl.split(",")[1];
+  if (!encoded || !dataUrl.startsWith("data:image/png;base64,")) {
+    throw new Error("Could not prepare the postcard image");
+  }
+  const bytes = Uint8Array.from(atob(encoded), character =>
+    character.charCodeAt(0)
+  );
+  return new Blob([bytes], { type: "image/png" });
 }
 
 export async function downloadPostcardAsPNG(
@@ -46,24 +52,25 @@ export async function downloadPostcardAsPNG(
 }
 
 export async function copyPostcardAsPNG(element: HTMLElement): Promise<void> {
-  const dataUrl = await rasterizePostcard(element);
-  const blob = await dataUrlToBlob(dataUrl);
-
-  if (!navigator.clipboard?.write) {
-    download(dataUrl, "luckee-postcard.png");
-    throw new Error("Clipboard images are not supported in this browser");
+  if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+    throw new Error(
+      "Image copying is not supported in this browser. Use Download Postcard → PNG."
+    );
   }
 
+  // Start the clipboard write during the click; Safari expires activation across awaits.
+  const image = rasterizePostcard(element).then(dataUrlToBlob);
   try {
     await navigator.clipboard.write([
-      new ClipboardItem({ [blob.type || "image/png"]: blob }),
+      new ClipboardItem({ "image/png": image }),
     ]);
-  } catch {
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        "image/png": Promise.resolve(blob),
-      }),
-    ]);
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "NotAllowedError") {
+      throw new Error(
+        "Clipboard access was blocked. Allow clipboard access for this site, or use Download Postcard → PNG."
+      );
+    }
+    throw error;
   }
 }
 

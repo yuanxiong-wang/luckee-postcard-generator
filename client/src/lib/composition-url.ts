@@ -7,7 +7,11 @@ import {
   type AppRegion,
   type HolidayId,
 } from "./holidays.ts";
-import type { PostcardComposition } from "./postcard-composition.ts";
+import {
+  getDefaultMessage,
+  type PostcardLayout,
+  type PostcardComposition,
+} from "./postcard-composition.ts";
 import {
   DEFAULT_POSTCARD_BACKGROUND,
   DEFAULT_POSTCARD_FONT,
@@ -19,6 +23,9 @@ import {
 import { detectRegion, readStoredRegion } from "./detect-region.ts";
 
 export interface CompositionQuery {
+  layout?: PostcardLayout;
+  headline?: string;
+  shortMessage?: string;
   region?: AppRegion;
   holidayId?: HolidayId;
   greeting?: string;
@@ -31,6 +38,11 @@ export function parseCompositionSearch(search: string): CompositionQuery {
     search.startsWith("?") ? search.slice(1) : search
   );
   const query: CompositionQuery = {};
+  if (params.get("l") === "photo-message") query.layout = "photo-message";
+  if (params.get("title")?.trim())
+    query.headline = params.get("title")!.slice(0, 70);
+  if (params.get("message")?.trim())
+    query.shortMessage = params.get("message")!.slice(0, 220);
   const region = params.get("r");
   if (region && isAppRegion(region)) query.region = region;
   const holidayId = params.get("h");
@@ -48,6 +60,9 @@ export function parseCompositionSearch(search: string): CompositionQuery {
 
 export function serializeComposition(composition: PostcardComposition): string {
   const params = new URLSearchParams({
+    l: composition.layout,
+    title: composition.headline,
+    message: composition.shortMessage,
     h: composition.holiday.id,
     r: composition.region,
     g: composition.greeting,
@@ -71,6 +86,9 @@ export function compositionFromQuery(
     getCurrentOrNextHoliday(region);
 
   return {
+    layout: query.layout ?? "classic",
+    headline: query.headline ?? getDefaultMessage(holiday).headline,
+    shortMessage: query.shortMessage ?? getDefaultMessage(holiday).shortMessage,
     region,
     holiday,
     greeting: query.greeting?.trim() || getRandomGreeting(holiday),

@@ -1,4 +1,8 @@
-import type { PostcardComposition } from "./postcard-composition";
+import {
+  getDefaultMessage,
+  type PostcardLayout,
+  type PostcardComposition,
+} from "./postcard-composition";
 import {
   getHolidayById,
   isAppRegion,
@@ -20,6 +24,9 @@ export interface FavoritePostcard {
   region: AppRegion;
   holidayId: HolidayId;
   greeting: string;
+  layout: PostcardLayout;
+  headline: string;
+  shortMessage: string;
   backgroundStyle: PostcardBackgroundId;
   fontStyle: PostcardFontId;
 }
@@ -49,7 +56,9 @@ function readHolidayId(value: unknown): HolidayId | undefined {
 
   if (value && typeof value === "object" && "id" in value) {
     const holidayId = (value as { id: unknown }).id;
-    return typeof holidayId === "string" ? getHolidayById(holidayId)?.id : undefined;
+    return typeof holidayId === "string"
+      ? getHolidayById(holidayId)?.id
+      : undefined;
   }
 
   return undefined;
@@ -80,7 +89,8 @@ function normalizeFavorite(value: unknown): FavoritePostcard | null {
       ? favorite.backgroundStyle
       : DEFAULT_POSTCARD_BACKGROUND;
   const fontStyle =
-    typeof favorite.fontStyle === "string" && isPostcardFontId(favorite.fontStyle)
+    typeof favorite.fontStyle === "string" &&
+    isPostcardFontId(favorite.fontStyle)
       ? favorite.fontStyle
       : DEFAULT_POSTCARD_FONT;
 
@@ -89,6 +99,15 @@ function normalizeFavorite(value: unknown): FavoritePostcard | null {
     timestamp: favorite.timestamp,
     region: regionValue,
     holidayId,
+    layout: favorite.layout === "photo-message" ? "photo-message" : "classic",
+    headline:
+      typeof favorite.headline === "string"
+        ? favorite.headline.slice(0, 70)
+        : getDefaultMessage(getHolidayById(holidayId)!).headline,
+    shortMessage:
+      typeof favorite.shortMessage === "string"
+        ? favorite.shortMessage.slice(0, 220)
+        : getDefaultMessage(getHolidayById(holidayId)!).shortMessage,
     greeting: favorite.greeting,
     backgroundStyle,
     fontStyle,
@@ -100,11 +119,15 @@ export function isSameComposition(
   composition: PostcardComposition
 ): boolean {
   return (
+    favorite.layout === composition.layout &&
     favorite.holidayId === composition.holiday.id &&
-    favorite.greeting === composition.greeting &&
     favorite.region === composition.region &&
-    favorite.backgroundStyle === composition.backgroundStyle &&
-    favorite.fontStyle === composition.fontStyle
+    favorite.fontStyle === composition.fontStyle &&
+    (composition.layout === "photo-message"
+      ? favorite.headline === composition.headline &&
+        favorite.shortMessage === composition.shortMessage
+      : favorite.greeting === composition.greeting &&
+        favorite.backgroundStyle === composition.backgroundStyle)
   );
 }
 
@@ -123,6 +146,9 @@ export function saveFavorite(
       timestamp: Date.now(),
       region: composition.region,
       holidayId: composition.holiday.id,
+      layout: composition.layout,
+      headline: composition.headline,
+      shortMessage: composition.shortMessage,
       greeting: composition.greeting,
       backgroundStyle: composition.backgroundStyle,
       fontStyle: composition.fontStyle,

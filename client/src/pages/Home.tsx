@@ -18,7 +18,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePostcardStudio } from "@/hooks/usePostcardStudio";
-import { getHolidayDateForYear, getNextHoliday, getPreviousHoliday } from "@/lib/holidays";
+import {
+  getHolidayDateForYear,
+  getNextHoliday,
+  getPreviousHoliday,
+} from "@/lib/holidays";
 
 export default function Home() {
   const postcardRef = useRef<HTMLDivElement>(null);
@@ -30,10 +34,14 @@ export default function Home() {
       <main className="container mx-auto max-w-6xl px-4">
         <div className="studio-masthead mb-8 flex flex-wrap items-end justify-between gap-4 pb-6">
           <div>
-            <p className="studio-kicker mb-3">Luckee / The greeting collection</p>
+            <p className="studio-kicker mb-3">
+              Luckee / The greeting collection
+            </p>
             <h1 className="studio-title">Luckee Seasonal Greetings</h1>
           </div>
-          <p className="studio-edition">US &nbsp; / &nbsp; UK &nbsp; / &nbsp; Canada</p>
+          <p className="studio-edition">
+            US &nbsp; / &nbsp; UK &nbsp; / &nbsp; Canada
+          </p>
         </div>
 
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
@@ -44,7 +52,15 @@ export default function Home() {
                 <h2>{composition.holiday.name}</h2>
               </div>
               <div className="catalog-meta">
-                <span>{getHolidayDateForYear(composition.holiday, new Date().getFullYear()).toLocaleDateString("en-US", { month: "long", day: "numeric" })}</span>
+                <span>
+                  {getHolidayDateForYear(
+                    composition.holiday,
+                    new Date().getFullYear()
+                  ).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
                 <span>{composition.holiday.regions.join(" / ")}</span>
               </div>
             </div>
@@ -52,6 +68,9 @@ export default function Home() {
               <Postcard
                 ref={postcardRef}
                 holiday={composition.holiday}
+                layout={composition.layout}
+                headline={composition.headline}
+                shortMessage={composition.shortMessage}
                 greeting={composition.greeting}
                 backgroundStyle={composition.backgroundStyle}
                 fontStyle={composition.fontStyle}
@@ -94,6 +113,8 @@ export default function Home() {
 
             <PostcardStyleControls
               holiday={composition.holiday}
+              layout={composition.layout}
+              onLayoutChange={studio.setLayout}
               background={composition.backgroundStyle}
               font={composition.fontStyle}
               onBackgroundChange={studio.setBackgroundStyle}
@@ -183,6 +204,10 @@ export default function Home() {
 
       <MessageEditor
         open={panel === "message"}
+        layout={composition.layout}
+        headline={composition.headline}
+        shortMessage={composition.shortMessage}
+        onSaveMessage={studio.saveMessage}
         currentMessage={composition.greeting}
         onSave={studio.saveGreeting}
         onCancel={studio.closePanel}

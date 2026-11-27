@@ -35,7 +35,9 @@ export function FavoritesPanel({
 
   const handleSelectFavorite = (favorite: FavoritePostcard) => {
     onSelectFavorite(favorite);
-    toast.success(`Loaded: ${favorite.greeting.substring(0, 30)}`);
+    toast.success(
+      `Loaded: ${(favorite.layout === "photo-message" ? favorite.headline : favorite.greeting).substring(0, 30)}`
+    );
   };
 
   if (favorites.length === 0) {
@@ -72,6 +74,10 @@ export function FavoritesPanel({
 
       <div className="max-h-96 overflow-y-auto">
         {favorites.map((favorite, index) => {
+          const title =
+            favorite.layout === "photo-message"
+              ? favorite.headline
+              : favorite.greeting;
           const holidayName =
             getHolidayById(favorite.holidayId)?.name ?? "Unknown holiday";
 
@@ -93,7 +99,7 @@ export function FavoritesPanel({
                     className="w-full text-left"
                   >
                     <p className="truncate text-sm font-semibold text-slate-700 transition-colors hover:text-orange-600">
-                      {favorite.greeting}
+                      {title}
                     </p>
                     <p className="mt-1 font-[Georgia,serif] text-xs text-slate-500">
                       {holidayName} •{" "}
@@ -132,7 +138,7 @@ export function FavoritesPanel({
                 <div className="flex gap-1">
                   <button
                     onClick={() => handleSelectFavorite(favorite)}
-                    aria-label={`Load ${favorite.greeting}`}
+                    aria-label={`Load ${title}`}
                     className="rounded p-2 text-slate-500 transition-colors hover:bg-orange-50 hover:text-orange-600"
                     title="Load this postcard"
                   >
@@ -140,7 +146,7 @@ export function FavoritesPanel({
                   </button>
                   <button
                     onClick={() => handleRemoveFavorite(favorite.id)}
-                    aria-label={`Remove ${favorite.greeting} from favorites`}
+                    aria-label={`Remove ${title} from favorites`}
                     className="rounded p-2 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
                     title="Remove from favorites"
                   >

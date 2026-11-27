@@ -16,6 +16,8 @@ if ! git diff --quiet -- \
   sitemap.xml \
   llms.txt \
   holiday-backgrounds \
+  holiday-photos \
+  client/public/holiday-photos \
   client/public/holiday-backgrounds
 then
   echo "Static root bundle is out of date."
@@ -31,6 +33,8 @@ then
     sitemap.xml \
     llms.txt \
     holiday-backgrounds \
+    holiday-photos \
+    client/public/holiday-photos \
     client/public/holiday-backgrounds
   exit 1
 fi

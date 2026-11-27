@@ -6,6 +6,7 @@ A browser-based editor for creating seasonal greetings for clients, partners, an
 
 - Browse US, UK, and Canadian holidays, or view all regions together.
 - Select holiday artwork, background treatments, and typefaces.
+- Choose the classic layout or a photo-and-message layout with separate headline and short-message fields. Thanksgiving starts with a partnership thank-you and a dedicated seasonal image; other holidays use their existing artwork.
 - Refresh or edit the greeting, save favorites, and browse the holiday calendar.
 - Download a postcard as PNG or PDF, copy a PNG, or share a link to the composition.
 
@@ -38,7 +39,7 @@ pnpm check:holidays   # Holiday data and calendar checks
 
 ## Build And Deployment
 
-Cloudflare serves the static files in the repository root. `pnpm build` builds the app and synchronizes the root bundle. **The synchronization script recursively removes and replaces several output directories**, and Vite clears its build output. Review this behavior before running it, particularly where bulk deletion is prohibited.
+Cloudflare serves the static files in the repository root. `pnpm build` builds the app and synchronizes the root bundle. The build and synchronization script preserve existing output files and copy in the latest bundle, including seasonal photos. Older hashed assets remain available; obsolete files are not automatically deleted.
 
 For a non-destructive verification build, choose a new temporary output directory:
 
@@ -46,7 +47,7 @@ For a non-destructive verification build, choose a new temporary output director
 pnpm exec vite build --outDir /tmp/luckee-postcard-build --emptyOutDir false
 ```
 
-This checks the build but does not update the production files. Deployments require the root HTML and referenced generated assets to match. The configured pre-push hook runs the normal build and checks those files, so it also uses the recursive synchronization described above.
+This checks the build but does not update the production files. Deployments require the root HTML and referenced generated assets to match. The configured pre-push hook runs the normal build and checks those files, using the same non-destructive synchronization.
 
 To add a holiday, follow the existing entries in `client/src/lib/holidays.data.ts`, provide its artwork in `client/public/holiday-backgrounds/`, and run the holiday checks.
 

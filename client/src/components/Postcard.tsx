@@ -19,7 +19,12 @@ import type {
   PostcardFontId,
 } from "@/lib/postcard-styles";
 
+import type { PostcardLayout } from "@/lib/postcard-composition";
+
 interface PostcardProps {
+  layout: PostcardLayout;
+  headline: string;
+  shortMessage: string;
   holiday: Holiday;
   greeting: string;
   backgroundStyle: PostcardBackgroundId;
@@ -27,13 +32,63 @@ interface PostcardProps {
 }
 
 export const Postcard = forwardRef<HTMLDivElement, PostcardProps>(
-  function Postcard({ holiday, greeting, backgroundStyle, fontStyle }, ref) {
+  function Postcard(
+    {
+      holiday,
+      greeting,
+      backgroundStyle,
+      fontStyle,
+      layout,
+      headline,
+      shortMessage,
+    },
+    ref
+  ) {
     const background = getPostcardBackgroundPresentation(
       backgroundStyle,
       holiday,
       holiday.artwork
     );
     const font = getPostcardFont(fontStyle);
+
+    if (layout === "photo-message") {
+      const image = holiday.id.includes("thanksgiving")
+        ? "/holiday-photos/thanksgiving.webp"
+        : holiday.artwork;
+      return (
+        <div
+          ref={ref}
+          data-export-root
+          className="studio-postcard postcard-photo-message"
+          data-compact={headline.length > 45 || shortMessage.length > 160}
+        >
+          <div
+            className="postcard-photo"
+            style={{ backgroundImage: `url('${image}')` }}
+            role="img"
+            aria-label={`${holiday.name} seasonal scene`}
+          />
+          <div className="postcard-message-panel">
+            <p className="postcard-holiday-label">{holiday.name}</p>
+            <h1
+              className="postcard-message-headline"
+              style={{
+                fontFamily: font.family,
+                fontWeight: font.weight,
+                fontStyle: font.style,
+              }}
+            >
+              {headline}
+            </h1>
+            <p className="postcard-message-body">{shortMessage}</p>
+            <div className="postcard-message-signoff">
+              <span>From our team at</span>
+              <strong style={{ fontFamily: font.family }}>Luckee</strong>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div

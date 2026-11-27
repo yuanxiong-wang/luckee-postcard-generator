@@ -16,7 +16,11 @@ import type {
   PostcardFontId,
 } from "@/lib/postcard-styles";
 
+import type { PostcardLayout } from "@/lib/postcard-composition";
+
 interface PostcardStyleControlsProps {
+  layout: PostcardLayout;
+  onLayoutChange: (layout: PostcardLayout) => void;
   holiday: Holiday;
   background: PostcardBackgroundId;
   font: PostcardFontId;
@@ -27,6 +31,8 @@ interface PostcardStyleControlsProps {
 
 export function PostcardStyleControls({
   holiday,
+  layout,
+  onLayoutChange,
   background,
   font,
   onBackgroundChange,
@@ -58,56 +64,87 @@ export function PostcardStyleControls({
         </Tooltip>
       </div>
 
-      <fieldset>
+      <fieldset className="mb-5">
         <legend className="mb-3 text-xs font-bold text-[#526569]">
-          Background
+          Layout
         </legend>
         <div
-          className="grid grid-cols-5 gap-2"
+          className="grid grid-cols-2 gap-2"
           role="radiogroup"
-          aria-label="Postcard background"
+          aria-label="Postcard layout"
         >
-          {postcardBackgroundOptions.map(option => {
-            const presentation = getPostcardBackgroundPresentation(
-              option.id,
-              holiday,
-              artworkUrl
-            );
-            const isSelected = background === option.id;
-
-            return (
-              <Tooltip key={option.id}>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={isSelected}
-                    aria-label={option.label}
-                    onClick={() => onBackgroundChange(option.id)}
-                    className={`relative aspect-square w-full overflow-hidden rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b58b43] ${
-                      isSelected
-                        ? "border-[#1d4f4a] shadow-[0_0_0_2px_rgba(29,79,74,0.14)]"
-                        : "border-white/80 hover:border-[#8ca39d]"
-                    }`}
-                    style={presentation.surface}
-                  >
-                    <span
-                      className="absolute inset-0"
-                      style={presentation.overlay}
-                    />
-                    {isSelected && (
-                      <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1d4f4a] text-white">
-                        <Check className="h-3 w-3" />
-                      </span>
-                    )}
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>{option.label}</TooltipContent>
-              </Tooltip>
-            );
-          })}
+          {(
+            [
+              ["classic", "Classic"],
+              ["photo-message", "Photo & message"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={layout === id}
+              onClick={() => onLayoutChange(id)}
+              className={`rounded-md border px-2 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b58b43] ${layout === id ? "border-[#1d4f4a] bg-[#e7eee9] text-[#142f34]" : "border-[rgba(20,47,52,0.12)] bg-white/60 text-[#526569]"}`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </fieldset>
+
+      {layout === "classic" && (
+        <fieldset>
+          <legend className="mb-3 text-xs font-bold text-[#526569]">
+            Background
+          </legend>
+          <div
+            className="grid grid-cols-5 gap-2"
+            role="radiogroup"
+            aria-label="Postcard background"
+          >
+            {postcardBackgroundOptions.map(option => {
+              const presentation = getPostcardBackgroundPresentation(
+                option.id,
+                holiday,
+                artworkUrl
+              );
+              const isSelected = background === option.id;
+
+              return (
+                <Tooltip key={option.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      aria-label={option.label}
+                      onClick={() => onBackgroundChange(option.id)}
+                      className={`relative aspect-square w-full overflow-hidden rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b58b43] ${
+                        isSelected
+                          ? "border-[#1d4f4a] shadow-[0_0_0_2px_rgba(29,79,74,0.14)]"
+                          : "border-white/80 hover:border-[#8ca39d]"
+                      }`}
+                      style={presentation.surface}
+                    >
+                      <span
+                        className="absolute inset-0"
+                        style={presentation.overlay}
+                      />
+                      {isSelected && (
+                        <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1d4f4a] text-white">
+                          <Check className="h-3 w-3" />
+                        </span>
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>{option.label}</TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
 
       <div className="my-5 h-px bg-[rgba(20,47,52,0.1)]" />
 

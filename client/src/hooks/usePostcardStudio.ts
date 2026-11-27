@@ -16,7 +16,11 @@ import {
   type Holiday,
 } from "@/lib/holidays";
 import type { FavoritePostcard } from "@/lib/favorites";
-import type { PostcardComposition } from "@/lib/postcard-composition";
+import {
+  getDefaultMessage,
+  type PostcardLayout,
+  type PostcardComposition,
+} from "@/lib/postcard-composition";
 import {
   DEFAULT_POSTCARD_BACKGROUND,
   DEFAULT_POSTCARD_FONT,
@@ -34,9 +38,11 @@ export type StudioPanel =
 function createComposition(
   holiday: Holiday,
   region: AppRegion,
-  styles?: Pick<PostcardComposition, "backgroundStyle" | "fontStyle">
+  styles?: Pick<PostcardComposition, "backgroundStyle" | "fontStyle" | "layout">
 ): PostcardComposition {
   return {
+    ...getDefaultMessage(holiday),
+    layout: styles?.layout ?? "classic",
     region,
     holiday,
     greeting: getRandomGreeting(holiday),
@@ -105,6 +111,15 @@ export function usePostcardStudio() {
     setPanel("none");
   }, []);
 
+  const setLayout = useCallback((layout: PostcardLayout) => {
+    setComposition(current => ({ ...current, layout }));
+  }, []);
+
+  const saveMessage = useCallback((headline: string, shortMessage: string) => {
+    setComposition(current => ({ ...current, headline, shortMessage }));
+    setPanel("none");
+  }, []);
+
   const setBackgroundStyle = useCallback(
     (backgroundStyle: PostcardBackgroundId) => {
       setComposition(current => ({ ...current, backgroundStyle }));
@@ -119,6 +134,7 @@ export function usePostcardStudio() {
   const resetStyles = useCallback(() => {
     setComposition(current => ({
       ...current,
+      layout: "classic",
       backgroundStyle: DEFAULT_POSTCARD_BACKGROUND,
       fontStyle: DEFAULT_POSTCARD_FONT,
     }));
@@ -127,7 +143,9 @@ export function usePostcardStudio() {
   const refreshGreeting = useCallback(() => {
     setComposition(current => ({
       ...current,
-      greeting: getRandomGreeting(current.holiday, current.greeting),
+      ...(current.layout === "photo-message"
+        ? { headline: getRandomGreeting(current.holiday, current.headline) }
+        : { greeting: getRandomGreeting(current.holiday, current.greeting) }),
     }));
   }, []);
 
@@ -139,6 +157,9 @@ export function usePostcardStudio() {
     setComposition({
       region: favorite.region,
       holiday,
+      layout: favorite.layout,
+      headline: favorite.headline,
+      shortMessage: favorite.shortMessage,
       greeting: favorite.greeting,
       backgroundStyle: favorite.backgroundStyle,
       fontStyle: favorite.fontStyle,
@@ -154,6 +175,8 @@ export function usePostcardStudio() {
     selectHoliday,
     handleRegionChange,
     saveGreeting,
+    saveMessage,
+    setLayout,
     setBackgroundStyle,
     setFontStyle,
     resetStyles,

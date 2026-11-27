@@ -59,7 +59,11 @@ assert.equal(holidays.length, Object.keys(expected2026).length);
 const seen = new Set<string>();
 const artworks = new Set<string>();
 for (const holiday of holidays) {
-  assert.equal(seen.has(holiday.id), false, `Duplicate holiday id ${holiday.id}`);
+  assert.equal(
+    seen.has(holiday.id),
+    false,
+    `Duplicate holiday id ${holiday.id}`
+  );
   seen.add(holiday.id);
   assert.ok(holiday.artwork.startsWith("/holiday-backgrounds/"));
   assert.equal(
@@ -124,7 +128,9 @@ assert.equal(
   true
 );
 assert.equal(
-  getHolidaysByRegion("UK").some(holiday => holiday.id === "remembrance-sunday"),
+  getHolidaysByRegion("UK").some(
+    holiday => holiday.id === "remembrance-sunday"
+  ),
   true
 );
 assert.equal(
@@ -147,6 +153,9 @@ assert.equal(detectRegion("fr-FR", "Europe/Paris"), "all");
 const holiday = getHolidayById("christmas");
 assert(holiday);
 const encoded = serializeComposition({
+  layout: "classic",
+  headline: "Grateful for Your Partnership",
+  shortMessage: "Warm wishes from Luckee.",
   region: "UK",
   holiday,
   greeting: "Season's Brightest Wishes",
@@ -166,3 +175,42 @@ assert.equal(restored.region, "UK");
 assert.equal(restored.greeting, "Season's Brightest Wishes");
 
 console.log(`Checked ${holidays.length} holidays across every DateRule.`);
+
+const thanksgivingPhoto = compositionFromQuery(
+  parseCompositionSearch("?h=thanksgiving&l=photo-message"),
+  "US"
+);
+assert.equal(thanksgivingPhoto.headline, "Grateful for Your Partnership");
+assert.equal(
+  thanksgivingPhoto.shortMessage,
+  "Thank you for trusting Luckee to be part of your team. Wishing you and yours a warm and joyful Thanksgiving."
+);
+const photoRoundTrip = compositionFromQuery(
+  parseCompositionSearch(
+    serializeComposition({
+      ...thanksgivingPhoto,
+      headline: "Thank you, A & B",
+      shortMessage: "Your trust means so much.\nWarm wishes!",
+    })
+  ),
+  "all"
+);
+assert.equal(photoRoundTrip.layout, "photo-message");
+assert.equal(photoRoundTrip.headline, "Thank you, A & B");
+assert.equal(
+  photoRoundTrip.shortMessage,
+  "Your trust means so much.\nWarm wishes!"
+);
+assert.equal(
+  compositionFromQuery(parseCompositionSearch("?h=thanksgiving"), "US").layout,
+  "classic"
+);
+assert.equal(
+  parseCompositionSearch("?l=invalid&title=" + "x".repeat(100)).headline
+    ?.length,
+  70
+);
+assert.equal(
+  parseCompositionSearch("?message=" + "x".repeat(300)).shortMessage?.length,
+  220
+);

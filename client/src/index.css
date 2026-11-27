@@ -166,7 +166,9 @@
     background: #f8f8f5;
   }
 
-  .studio-masthead { border-bottom: 1px solid #b29862; }
+  .studio-masthead {
+    border-bottom: 1px solid #b29862;
+  }
 
   .studio-edition {
     color: #783e49;
@@ -351,4 +353,96 @@
       max-width: 1280px; /* Standard content width */
     }
   }
+}
+
+/* Scale the whole postcard proportionally for previews and exports. */
+.postcard-photo-message {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: 42% 58%;
+  width: 100%;
+  aspect-ratio: 8.5 / 5.5;
+  overflow: hidden;
+  background: #fbf7ee;
+  color: #17363a;
+}
+.postcard-photo {
+  background-size: cover;
+  background-position: center;
+}
+.postcard-message-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5.5cqw 4.5cqw;
+}
+.postcard-holiday-label {
+  margin: 0 0 2.6cqw;
+  color: #926b32;
+  font:
+    700 1.45cqw/1.4 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.postcard-message-headline {
+  margin: 0;
+  font-size: 4.9cqw;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+.postcard-message-body {
+  margin: 2.7cqw 0 0;
+  font:
+    400 2cqw/1.6 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.postcard-message-signoff {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8cqw;
+  margin-top: 3.5cqw;
+  padding-top: 2.2cqw;
+  border-top: 1px solid #d9c9aa;
+}
+.postcard-message-signoff span {
+  font:
+    500 1.45cqw/1.4 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  color: #596c68;
+}
+.postcard-message-signoff strong {
+  font-size: 3.4cqw;
+  line-height: 1.1;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.postcard-photo-message[data-compact="true"] .postcard-message-panel {
+  padding: 4cqw 3.8cqw;
+}
+.postcard-photo-message[data-compact="true"] .postcard-holiday-label {
+  margin-bottom: 1.8cqw;
+  font-size: 1.3cqw;
+}
+.postcard-photo-message[data-compact="true"] .postcard-message-headline {
+  font-size: 3.4cqw;
+  line-height: 1.05;
+}
+.postcard-photo-message[data-compact="true"] .postcard-message-body {
+  margin-top: 2cqw;
+  font-size: 1.65cqw;
+  line-height: 1.4;
+}
+.postcard-photo-message[data-compact="true"] .postcard-message-signoff {
+  margin-top: 2cqw;
+  padding-top: 1.6cqw;
+}
+.postcard-photo-message[data-compact="true"] .postcard-message-signoff strong {
+  font-size: 2.8cqw;
 }
